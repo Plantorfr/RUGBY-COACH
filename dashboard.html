@@ -5,175 +5,468 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>Accueil — RugbyCoach</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#111111">
+  <meta name="theme-color" content="#0a0e15">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/auth.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #111; color: #fff; max-width: 390px; margin: 0 auto; padding-bottom: 80px; }
-    .header { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; }
-    .header-left { display: flex; align-items: center; gap: 10px; }
-    .avatar { width: 36px; height: 36px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; color: #111; }
-    .header-info { line-height: 1.3; }
-    .header-info small { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
-    .header-info strong { font-size: 14px; font-weight: 600; display: block; }
-    .notif-btn { width: 36px; height: 36px; background: #1e1e1e; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; }
+    :root {
+      --bg: #0a0e15; --bg2: #131a26; --surface: #161e2c; --surface2: #1c2535;
+      --border: #243049; --border-strong: #2f3d5a;
+      --fg: #f4ecdb; --fg-mute: #9aa5b8; --fg-faint: #6b7689;
+      --yellow: #ffd83a; --yellow-deep: #f0b800;
+      --red: #ef4343; --red-strong: #ba1c1c;
+      --navy: #1e3b8a; --green: #0f6b48;
+      --display: "Roboto Condensed", system-ui, sans-serif;
+      --sans: "Roboto", system-ui, sans-serif;
+    }
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--fg);
+      max-width: 390px;
+      margin: 0 auto;
+      padding-bottom: 90px;
+      -webkit-font-smoothing: antialiased;
+    }
 
-    /* PROCHAIN MATCH */
-    .prochain-match { margin: 0 20px 20px; background: #1e1e1e; border-radius: 14px; padding: 18px 20px; border: 0.5px solid #2a2a2a; }
-    .prochain-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 10px; }
-    .prochain-adversaire { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-    .prochain-meta { font-size: 12px; color: #888; margin-bottom: 14px; }
-    .countdown-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
-    .countdown-box { background: #111; border-radius: 10px; padding: 10px 6px; text-align: center; }
-    .countdown-val { font-size: 22px; font-weight: 800; color: #F59E0B; line-height: 1; }
-    .countdown-lbl { font-size: 10px; color: #666; margin-top: 3px; }
-    .no-match { color: #444; font-size: 13px; text-align: center; padding: 10px 0; }
+    /* APPBAR */
+    .appbar {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 18px 16px;
+      position: relative;
+    }
+    .appbar::before {
+      content: "";
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(80% 120% at 100% 0%, rgba(255,216,58,0.06), transparent 60%),
+        radial-gradient(60% 80% at 0% 100%, rgba(239,67,67,0.04), transparent 60%);
+    }
+    .avatar {
+      width: 42px; height: 42px;
+      border-radius: 13px;
+      background: var(--yellow);
+      color: var(--bg);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--display);
+      font-size: 18px; font-weight: 900;
+      font-style: italic;
+      flex-shrink: 0;
+    }
+    .appbar-info { flex: 1; }
+    .appbar-greet {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 800;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      color: var(--fg-mute);
+    }
+    .appbar-team {
+      font-family: var(--display);
+      font-size: 18px; font-weight: 800;
+      letter-spacing: -0.01em;
+      color: var(--fg);
+    }
+    .icon-btn {
+      width: 40px; height: 40px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--fg);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 18px;
+    }
 
-    .section { padding: 0 20px; margin-bottom: 24px; }
-    .section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-    .section-title { font-size: 13px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; color: #888; }
-    .section-link { font-size: 12px; color: #F59E0B; text-decoration: none; font-weight: 500; }
+    /* BODY */
+    .body {
+      padding: 4px 18px 0;
+      display: flex; flex-direction: column; gap: 22px;
+    }
 
-    .effectif-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-    .eff-card { background: #1e1e1e; border-radius: 12px; padding: 14px 12px; }
-    .eff-card.yellow { background: #F59E0B; }
-    .eff-card .val { font-size: 28px; font-weight: 700; line-height: 1; margin-bottom: 4px; }
-    .eff-card.yellow .val { color: #111; }
-    .eff-card .val-label { font-size: 11px; color: #888; }
-    .eff-card.yellow .val-label { color: #7a5500; }
+    /* SECTION */
+    .section-h {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding: 0 2px; margin-bottom: 12px;
+    }
+    .section-h h3 {
+      font-family: var(--display);
+      font-size: 15px; font-weight: 800;
+      letter-spacing: -0.005em; text-transform: uppercase;
+      color: var(--fg); margin: 0;
+    }
+    .section-link {
+      font-family: var(--display);
+      font-size: 11px; font-weight: 700;
+      color: var(--fg-mute); text-transform: uppercase;
+      letter-spacing: 0.06em; cursor: pointer;
+      text-decoration: none;
+    }
+    .section-link:hover { color: var(--fg); }
 
-    .forme-card { background: #F59E0B; border-radius: 14px; padding: 20px; }
-    .forme-label { font-size: 11px; color: #7a5500; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; font-weight: 600; }
-    .forme-score { font-size: 42px; font-weight: 800; color: #111; line-height: 1; margin-bottom: 6px; }
-    .forme-desc { font-size: 13px; color: #7a5500; }
+    /* MATCH HERO */
+    .match-hero {
+      border-radius: 24px; overflow: hidden;
+      background: var(--bg);
+      box-shadow: 0 20px 50px -20px rgba(10,14,21,0.8), 0 4px 12px -4px rgba(10,14,21,0.4);
+      isolation: isolate; position: relative;
+    }
+    .match-hero-bg {
+      position: absolute; inset: 0; z-index: 0;
+      background:
+        radial-gradient(120% 80% at 100% 0%, rgba(255,216,58,0.18), transparent 60%),
+        radial-gradient(80% 60% at 0% 100%, rgba(239,67,67,0.25), transparent 70%),
+        linear-gradient(180deg, #1a2540 0%, #0a0e15 100%);
+    }
+    .match-hero-bg::after {
+      content: "";
+      position: absolute; inset: 0;
+      background-image: radial-gradient(rgba(255,255,255,0.06) 1px, transparent 1px);
+      background-size: 14px 14px;
+      mix-blend-mode: overlay; opacity: 0.6;
+    }
+    .match-hero-inner { position: relative; z-index: 1; padding: 18px 18px 16px; color: #fff; }
+    .match-tag {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--display);
+      font-size: 11px; font-weight: 800; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--yellow);
+      margin-bottom: 14px;
+    }
+    .match-teams {
+      display: grid; grid-template-columns: 1fr auto 1fr;
+      align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .match-team { display: flex; flex-direction: column; align-items: center; gap: 8px; }
+    .match-crest {
+      width: 52px; height: 52px; border-radius: 14px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--display); font-size: 16px; font-weight: 900;
+      backdrop-filter: blur(8px);
+    }
+    .match-crest.home {
+      background: var(--yellow); color: var(--bg);
+      border-color: rgba(0,0,0,0.1);
+      box-shadow: 0 4px 12px rgba(255,216,58,0.3);
+    }
+    .match-name {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.06em;
+      text-align: center; opacity: 0.85;
+    }
+    .match-vs {
+      font-family: var(--display);
+      font-size: 28px; font-weight: 900;
+      font-style: italic; letter-spacing: -0.04em;
+      background: linear-gradient(180deg, #fff 0%, rgba(255,255,255,0.4) 100%);
+      -webkit-background-clip: text; background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .countdown {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px;
+      margin-bottom: 14px;
+    }
+    .countdown-cell {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.10);
+      border-radius: 12px; padding: 10px 4px;
+      text-align: center; backdrop-filter: blur(8px);
+    }
+    .countdown-num {
+      font-family: var(--display);
+      font-size: 26px; font-weight: 900;
+      letter-spacing: -0.04em; line-height: 1;
+    }
+    .countdown-lbl {
+      font-family: var(--display);
+      font-size: 9px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      opacity: 0.6; margin-top: 4px;
+    }
+    .match-cta {
+      display: flex; gap: 8px;
+    }
+    .match-cta-btn {
+      flex: 1; height: 44px;
+      background: var(--yellow); color: var(--bg);
+      border: none; border-radius: 12px;
+      font-family: var(--display); font-size: 14px; font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(255,216,58,0.25);
+      display: flex; align-items: center; justify-content: center; gap: 6px;
+    }
+    .no-match {
+      font-size: 13px; color: var(--fg-faint);
+      text-align: center; padding: 20px 0;
+    }
+    .no-match a { color: var(--yellow); font-weight: 700; text-decoration: none; }
 
-    .injury-card { background: #1e1e1e; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-    .injury-dot { width: 36px; height: 36px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-    .injury-dot.out { background: #C0392B33; }
-    .injury-dot.doubt { background: #e67e2233; }
-    .injury-info strong { font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px; }
-    .injury-info span { font-size: 12px; color: #888; }
-    .injury-badge { margin-left: auto; background: #C0392B22; color: #C0392B; font-size: 10px; font-weight: 600; padding: 3px 8px; border-radius: 20px; white-space: nowrap; }
-    .injury-badge.doubt { background: #e67e2222; color: #e67e22; }
+    /* STATBLOCK */
+    .statblock {
+      display: grid; grid-template-columns: 1.4fr 1fr 1fr; gap: 10px;
+    }
+    .statblock-cell {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px; padding: 14px;
+      display: flex; flex-direction: column; gap: 6px;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px -12px rgba(0,0,0,0.6);
+    }
+    .statblock-cell.feature { background: var(--bg); border-color: var(--border-strong); }
+    .statblock-lbl {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.12em;
+      color: var(--fg-mute);
+    }
+    .statblock-cell.feature .statblock-lbl { color: rgba(255,216,58,0.7); }
+    .statblock-num {
+      font-family: var(--display);
+      font-size: 36px; font-weight: 900;
+      letter-spacing: -0.04em; line-height: 1;
+      color: var(--fg);
+    }
+    .statblock-cell.feature .statblock-num { color: var(--yellow); }
+    .statblock-cell.warn .statblock-num { color: #f7d04a; }
+    .statblock-cell.danger .statblock-num { color: var(--red); }
 
-    .match-card { background: #1e1e1e; border-radius: 12px; padding: 14px 16px; margin-bottom: 8px; }
-    .match-teams { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
-    .match-score-nous { color: #F59E0B; }
-    .match-score-eux { color: #888; }
-    .match-meta { font-size: 12px; color: #666; }
-    .match-result { display: inline-block; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; margin-left: 8px; }
-    .win { background: #1a3a1a; color: #27ae60; }
-    .loss { background: #3a1a1a; color: #C0392B; }
+    /* POSTER (bilan) */
+    .poster {
+      background: var(--yellow);
+      border-radius: 20px; padding: 16px 18px;
+      position: relative; overflow: hidden;
+      color: var(--bg);
+      border: 1px solid rgba(0,0,0,0.04);
+    }
+    .poster::before {
+      content: "";
+      position: absolute; right: -30px; bottom: -30px;
+      width: 140px; height: 140px; border-radius: 50%;
+      background: rgba(0,0,0,0.05);
+    }
+    .poster-kicker {
+      font-family: var(--display);
+      font-size: 10px; font-weight: 800; letter-spacing: 0.16em;
+      text-transform: uppercase; opacity: 0.7; position: relative;
+    }
+    .poster-num {
+      font-family: var(--display);
+      font-size: 60px; font-weight: 900;
+      letter-spacing: -0.05em; line-height: 0.9;
+      font-style: italic; margin: 4px 0 6px; position: relative;
+    }
+    .poster-cap {
+      font-size: 12px; font-weight: 600;
+      max-width: 60%; line-height: 1.4; position: relative;
+    }
 
-    .bottom-nav { position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); width: 390px; background: #1a1a1a; border-top: 0.5px solid #2a2a2a; display: flex; align-items: center; padding: 8px 0; z-index: 100; }
-    .nav-item { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; text-decoration: none; cursor: pointer; background: none; border: none; }
-    .nav-item span { font-size: 10px; color: #666; }
-    .nav-item.active span { color: #F59E0B; }
-    .nav-item svg { opacity: 0.4; }
-    .nav-item.active svg { opacity: 1; }
+    /* ALERT (infirmerie) */
+    .alert {
+      display: flex; gap: 12px;
+      padding: 14px; border-radius: 16px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px -12px rgba(0,0,0,0.6);
+      align-items: flex-start;
+      margin-bottom: 8px;
+    }
+    .alert.urgent { background: var(--bg); color: #fff; border-color: var(--border-strong); }
+    .alert-icon {
+      width: 40px; height: 40px; border-radius: 12px;
+      background: rgba(239,67,67,0.15);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0; color: var(--red);
+    }
+    .alert.urgent .alert-icon { background: var(--red); color: #fff; }
+    .alert-body { flex: 1; min-width: 0; }
+    .alert-title { font-size: 13px; font-weight: 700; display: flex; align-items: center; gap: 6px; }
+    .alert-sub { font-size: 12px; opacity: 0.75; margin-top: 3px; line-height: 1.4; }
+    .alert-eta {
+      display: inline-flex; align-items: center; gap: 4px;
+      font-family: var(--display);
+      font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase;
+      background: var(--yellow); color: var(--bg);
+      padding: 3px 7px; border-radius: 5px;
+    }
+
+    /* MATCH ROWS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 18px; overflow: hidden;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.02), 0 8px 24px -12px rgba(0,0,0,0.6);
+    }
+    .match-row {
+      display: grid; grid-template-columns: 36px 1fr auto;
+      gap: 14px; align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+    }
+    .match-row:last-child { border-bottom: 0; }
+    .match-row-badge {
+      width: 36px; height: 36px; border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: var(--display); font-size: 11px; font-weight: 800;
+    }
+    .match-row-badge.win { background: rgba(15,107,72,0.2); color: #6fe09a; }
+    .match-row-badge.loss { background: rgba(239,67,67,0.15); color: #ff8a8a; }
+    .match-row-vs { font-size: 13px; font-weight: 700; }
+    .match-row-date { font-size: 11px; color: var(--fg-mute); margin-top: 2px; }
+    .match-row-score {
+      font-family: var(--display);
+      font-size: 15px; font-weight: 900;
+      letter-spacing: -0.02em; text-align: right;
+    }
+
+    /* BOTTOM NAV */
+    .bottom-nav {
+      position: fixed; bottom: 0;
+      left: 50%; transform: translateX(-50%);
+      width: 390px;
+      background: var(--surface);
+      border-top: 1px solid var(--border);
+      display: flex; align-items: center;
+      padding: 10px 0 24px;
+      z-index: 100;
+    }
+    .nav-item {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; gap: 4px;
+      text-decoration: none; cursor: pointer;
+      background: none; border: none;
+    }
+    .nav-item span {
+      font-family: var(--display);
+      font-size: 9px; font-weight: 700;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      color: var(--fg-faint);
+    }
+    .nav-item.active span { color: var(--yellow); }
+    .nav-item i { font-size: 22px; color: var(--fg-faint); }
+    .nav-item.active i { color: var(--yellow); }
     .nav-center { flex: 1; display: flex; justify-content: center; }
-    .nav-plus { width: 48px; height: 48px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: none; cursor: pointer; margin-top: -20px; box-shadow: 0 4px 12px rgba(245,158,11,0.4); }
-    .empty { color: #444; font-size: 13px; text-align: center; padding: 20px; }
+    .nav-fab {
+      width: 52px; height: 52px;
+      background: var(--yellow); color: var(--bg);
+      border-radius: 50%; border: none; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; margin-top: -20px;
+      box-shadow: 0 6px 16px rgba(255,216,58,0.4);
+    }
+
+    .empty { color: var(--fg-faint); font-size: 13px; text-align: center; padding: 24px; }
   </style>
 </head>
 <body>
 
-  <div class="header">
-    <div class="header-left">
-      <div class="avatar" id="avatarInitials">C</div>
-      <div class="header-info">
-        <small>Bonjour,</small>
-        <strong id="coachName">Coach</strong>
+  <div class="appbar">
+    <div class="avatar" id="avatarInitials">C</div>
+    <div class="appbar-info">
+      <div class="appbar-greet">Bonjour,</div>
+      <div class="appbar-team" id="coachName">Coach</div>
+    </div>
+    <button class="icon-btn"><i class="ri-notification-3-line"></i></button>
+  </div>
+
+  <div class="body">
+
+    <!-- PROCHAIN MATCH -->
+    <div>
+      <div class="section-h">
+        <h3>Prochain match</h3>
+        <a href="matchs.html" class="section-link">Voir tout ›</a>
+      </div>
+      <div class="match-hero">
+        <div class="match-hero-bg"></div>
+        <div class="match-hero-inner">
+          <div id="prochainMatchContent">
+            <p class="no-match">Aucun match à venir — <a href="matchs.html">ajouter un match</a></p>
+          </div>
+        </div>
       </div>
     </div>
-    <button class="notif-btn">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-    </button>
-  </div>
 
-  <!-- PROCHAIN MATCH -->
-  <div class="prochain-match">
-    <div class="prochain-label">⚡ Prochain match</div>
-    <div id="prochainMatchContent">
-      <p class="no-match">Aucun match à venir — <a href="matchs.html" style="color:#F59E0B">ajouter un match</a></p>
-    </div>
-  </div>
-
-  <!-- EFFECTIF -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Effectif</span>
-      <a href="effectif.html" class="section-link">Tout voir ›</a>
-    </div>
-    <div class="effectif-grid">
-      <div class="eff-card yellow">
-        <div class="val" id="nbDispo">—</div>
-        <div class="val-label">Disponibles</div>
+    <!-- EFFECTIF -->
+    <div>
+      <div class="section-h">
+        <h3>Effectif</h3>
+        <a href="effectif.html" class="section-link">Tout voir ›</a>
       </div>
-      <div class="eff-card">
-        <div class="val" style="color:#e67e22" id="nbIncertain">—</div>
-        <div class="val-label" style="color:#888">Incertains</div>
-      </div>
-      <div class="eff-card">
-        <div class="val" style="color:#C0392B" id="nbOut">—</div>
-        <div class="val-label" style="color:#888">Forfaits</div>
+      <div class="statblock">
+        <div class="statblock-cell feature">
+          <div class="statblock-lbl">Disponibles</div>
+          <div class="statblock-num" id="nbDispo">—</div>
+        </div>
+        <div class="statblock-cell warn">
+          <div class="statblock-lbl">Incertains</div>
+          <div class="statblock-num" id="nbIncertain">—</div>
+        </div>
+        <div class="statblock-cell danger">
+          <div class="statblock-lbl">Forfaits</div>
+          <div class="statblock-num" id="nbOut">—</div>
+        </div>
       </div>
     </div>
-  </div>
 
-  <!-- FORME -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Forme du moment</span>
-      <span class="section-link" style="color:#888" id="nbMatchs"></span>
+    <!-- BILAN -->
+    <div>
+      <div class="section-h">
+        <h3>Forme du moment</h3>
+        <span class="section-link" id="nbMatchs"></span>
+      </div>
+      <div class="poster">
+        <div class="poster-kicker">Bilan saison</div>
+        <div class="poster-num" id="bilanScore">—</div>
+        <div class="poster-cap" id="bilanDesc">Chargement...</div>
+      </div>
     </div>
-    <div class="forme-card">
-      <div class="forme-label">Bilan saison</div>
-      <div class="forme-score" id="bilanScore">—</div>
-      <div class="forme-desc" id="bilanDesc">Chargement...</div>
-    </div>
-  </div>
 
-  <!-- INFIRMERIE -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Infirmerie</span>
-      <a href="sante.html" class="section-link">Voir tout ›</a>
+    <!-- INFIRMERIE -->
+    <div>
+      <div class="section-h">
+        <h3>Infirmerie</h3>
+        <a href="sante.html" class="section-link">Voir tout ›</a>
+      </div>
+      <div id="infirmerieList"><p class="empty">Aucun joueur blessé 💪</p></div>
     </div>
-    <div id="infirmerieList"><p class="empty">Aucun joueur blessé 💪</p></div>
-  </div>
 
-  <!-- DERNIERS MATCHS -->
-  <div class="section">
-    <div class="section-header">
-      <span class="section-title">Derniers matchs</span>
-      <a href="matchs.html" class="section-link">Voir tout ›</a>
+    <!-- DERNIERS MATCHS -->
+    <div>
+      <div class="section-h">
+        <h3>Derniers matchs</h3>
+        <a href="matchs.html" class="section-link">Voir tout ›</a>
+      </div>
+      <div class="card" id="matchsList"><p class="empty">Aucun match enregistré</p></div>
     </div>
-    <div id="matchsList"><p class="empty">Aucun match enregistré</p></div>
+
   </div>
 
   <nav class="bottom-nav">
     <a href="dashboard.html" class="nav-item active">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F59E0B" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      <i class="ri-home-5-fill"></i>
       <span>Accueil</span>
     </a>
     <a href="effectif.html" class="nav-item">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      <i class="ri-group-line"></i>
       <span>Effectif</span>
     </a>
     <div class="nav-center">
-      <button class="nav-plus" onclick="window.location.href='matchs.html'">
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      <button class="nav-fab" onclick="window.location.href='matchs.html'">
+        <i class="ri-add-line"></i>
       </button>
     </div>
     <a href="seances.html" class="nav-item">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      <i class="ri-calendar-line"></i>
       <span>Séances</span>
     </a>
     <a href="sante.html" class="nav-item">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <i class="ri-heart-pulse-line"></i>
       <span>Santé</span>
     </a>
   </nav>
@@ -187,51 +480,64 @@
       document.getElementById('coachName').textContent = name;
       document.getElementById('avatarInitials').textContent = name.charAt(0).toUpperCase();
 
-      // PROCHAIN MATCH
       const today = new Date().toISOString().split('T')[0];
+
+      // PROCHAIN MATCH
       const { data: prochains } = await window.supabaseClient
         .from('matchs').select('*')
+        .eq('statut', 'a_venir')
         .gte('date_match', today)
-        .order('date_match', { ascending: true })
-        .limit(1);
+        .order('date_match', { ascending: true }).limit(1);
 
       if (prochains && prochains.length > 0) {
         const m = prochains[0];
         const matchDate = new Date(m.date_match);
-        const now = new Date();
-        const diff = matchDate - now;
-        const jours = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const heures = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-        const secondes = Math.floor((diff % (1000 * 60)) / 1000);
         const dateStr = matchDate.toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
 
         document.getElementById('prochainMatchContent').innerHTML = `
-          <div class="prochain-adversaire">vs ${m.adversaire}</div>
-          <div class="prochain-meta">${dateStr} · ${m.lieu} ${m.competition ? '· ' + m.competition : ''}</div>
-          <div class="countdown-row">
-            <div class="countdown-box"><div class="countdown-val" id="cdJours">${jours}</div><div class="countdown-lbl">Jours</div></div>
-            <div class="countdown-box"><div class="countdown-val" id="cdHeures">${heures}</div><div class="countdown-lbl">Heures</div></div>
-            <div class="countdown-box"><div class="countdown-val" id="cdMinutes">${minutes}</div><div class="countdown-lbl">Min</div></div>
-            <div class="countdown-box"><div class="countdown-val" id="cdSecondes">${secondes}</div><div class="countdown-lbl">Sec</div></div>
+          <div class="match-tag">⚡ À venir</div>
+          <div class="match-teams">
+            <div class="match-team">
+              <div class="match-crest home">RCA</div>
+              <div class="match-name">RCACP</div>
+            </div>
+            <div class="match-vs">VS</div>
+            <div class="match-team">
+              <div class="match-crest">${m.adversaire.substring(0,3).toUpperCase()}</div>
+              <div class="match-name">${m.adversaire}</div>
+            </div>
+          </div>
+          <div style="font-size:12px;opacity:0.7;margin-bottom:14px;display:flex;gap:8px;align-items:center;">
+            <i class="ri-calendar-line"></i> ${dateStr}
+            <span style="width:3px;height:3px;border-radius:50%;background:currentColor;opacity:0.5"></span>
+            ${m.lieu} ${m.competition ? '· ' + m.competition : ''}
+          </div>
+          <div class="countdown" id="cdGrid">
+            <div class="countdown-cell"><div class="countdown-num" id="cdJ">—</div><div class="countdown-lbl">Jours</div></div>
+            <div class="countdown-cell"><div class="countdown-num" id="cdH">—</div><div class="countdown-lbl">Heures</div></div>
+            <div class="countdown-cell"><div class="countdown-num" id="cdM">—</div><div class="countdown-lbl">Min</div></div>
+            <div class="countdown-cell"><div class="countdown-num" id="cdS">—</div><div class="countdown-lbl">Sec</div></div>
+          </div>
+          <div class="match-cta">
+            <button class="match-cta-btn" onclick="window.location.href='matchs.html'">
+              <i class="ri-arrow-right-line"></i> Voir le match
+            </button>
           </div>`;
 
-        // Countdown live
-        setInterval(() => {
-          const diff2 = new Date(m.date_match) - new Date();
-          if (diff2 <= 0) return;
-          document.getElementById('cdJours').textContent = Math.floor(diff2 / (1000*60*60*24));
-          document.getElementById('cdHeures').textContent = Math.floor((diff2 % (1000*60*60*24)) / (1000*60*60));
-          document.getElementById('cdMinutes').textContent = Math.floor((diff2 % (1000*60*60)) / (1000*60));
-          document.getElementById('cdSecondes').textContent = Math.floor((diff2 % (1000*60)) / 1000);
-        }, 1000);
+        const tick = () => {
+          const diff = new Date(m.date_match) - new Date();
+          if (diff <= 0) return;
+          document.getElementById('cdJ').textContent = Math.floor(diff / 86400000);
+          document.getElementById('cdH').textContent = Math.floor((diff % 86400000) / 3600000);
+          document.getElementById('cdM').textContent = Math.floor((diff % 3600000) / 60000);
+          document.getElementById('cdS').textContent = Math.floor((diff % 60000) / 1000);
+        };
+        tick(); setInterval(tick, 1000);
       }
 
       // EFFECTIF
       const { data: joueurs } = await window.supabaseClient.from('joueurs').select('*').eq('archive', false);
-      if (joueurs) {
-        document.getElementById('nbDispo').textContent = joueurs.filter(j => j.disponible).length;
-      }
+      if (joueurs) document.getElementById('nbDispo').textContent = joueurs.filter(j => j.disponible).length;
 
       // BLESSÉS
       const { data: blesses } = await window.supabaseClient
@@ -246,20 +552,21 @@
       const infList = document.getElementById('infirmerieList');
       if (blesses && blesses.length > 0) {
         infList.innerHTML = blesses.map(b => `
-          <div class="injury-card">
-            <div class="injury-dot ${b.statut === 'out' ? 'out' : 'doubt'}">${b.statut === 'out' ? '🔴' : '🟡'}</div>
-            <div class="injury-info">
-              <strong>${b.joueurs?.prenom} ${b.joueurs?.nom}</strong>
-              <span>${b.type_blessure}</span>
+          <div class="alert ${b.statut === 'out' ? 'urgent' : ''}">
+            <div class="alert-icon"><i class="ri-${b.statut === 'out' ? 'close' : 'time'}-line"></i></div>
+            <div class="alert-body">
+              <div class="alert-title">
+                ${b.joueurs?.prenom} ${b.joueurs?.nom}
+                <span class="alert-eta">${b.statut === 'out' ? 'FORFAIT' : 'INCERTAIN'}</span>
+              </div>
+              <div class="alert-sub">${b.type_blessure}</div>
             </div>
-            <span class="injury-badge ${b.statut === 'incertain' ? 'doubt' : ''}">${b.statut === 'out' ? 'FORFAIT' : 'INCERTAIN'}</span>
           </div>`).join('');
       }
 
       // MATCHS
       const { data: matchs } = await window.supabaseClient
-        .from('matchs').select('*')
-        .lt('date_match', today)
+        .from('matchs').select('*').eq('statut', 'joue')
         .order('date_match', { ascending: false }).limit(4);
 
       const matchsList = document.getElementById('matchsList');
@@ -274,13 +581,13 @@
         matchsList.innerHTML = matchs.map(m => {
           const win = m.score_nous > m.score_eux;
           const date = new Date(m.date_match).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' });
-          return `<div class="match-card">
-            <div class="match-teams">
-              RCACP <span class="match-score-nous">${m.score_nous ?? '?'}</span>
-              – <span class="match-score-eux">${m.score_eux ?? '?'}</span> ${m.adversaire}
-              <span class="match-result ${win ? 'win' : 'loss'}">${win ? 'V' : 'D'}</span>
+          return `<div class="match-row" onclick="window.location.href='matchs.html'">
+            <div class="match-row-badge ${win ? 'win' : 'loss'}">${win ? 'V' : 'D'}</div>
+            <div>
+              <div class="match-row-vs">vs ${m.adversaire}</div>
+              <div class="match-row-date">${date} · ${m.lieu}</div>
             </div>
-            <div class="match-meta">${date} · ${m.lieu}</div>
+            <div class="match-row-score">${m.score_nous ?? '?'} – ${m.score_eux ?? '?'}</div>
           </div>`;
         }).join('');
       }
