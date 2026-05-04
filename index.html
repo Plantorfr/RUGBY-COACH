@@ -5,193 +5,254 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
   <title>RugbyCoach — RCACP 95</title>
   <link rel="manifest" href="manifest.json">
-  <meta name="theme-color" content="#0d0d0d">
+  <meta name="theme-color" content="#0a0e15">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Condensed:ital,wght@0,700;0,800;0,900;1,700;1,800;1,900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="assets/js/config.js"></script>
   <script src="assets/js/auth.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
-
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-      background: #0d0d0d;
+      font-family: "Roboto", system-ui, sans-serif;
+      background: #0a0e15;
       color: #fff;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background-image: radial-gradient(ellipse at top left, #1a1a1a 0%, #0d0d0d 60%);
+      -webkit-font-smoothing: antialiased;
     }
 
-    .container {
+    .rc-login {
       width: 100%;
       max-width: 390px;
-      padding: 48px 28px;
+      min-height: 100vh;
+      background: #0a0e15;
+      display: flex;
+      flex-direction: column;
+      padding: 70px 28px 28px;
+      position: relative;
+      overflow: hidden;
     }
 
+    /* Dégradés de fond */
+    .rc-login::before {
+      content: "";
+      position: absolute; inset: 0; pointer-events: none;
+      background:
+        radial-gradient(80% 50% at 100% 0%, rgba(255,216,58,0.18), transparent 60%),
+        radial-gradient(70% 50% at 0% 100%, rgba(239,67,67,0.22), transparent 60%);
+    }
+
+    /* Halftone dots */
+    .rc-login::after {
+      content: "";
+      position: absolute; inset: 0; pointer-events: none;
+      background-image: radial-gradient(rgba(255,255,255,0.08) 1px, transparent 1px);
+      background-size: 16px 16px;
+      mix-blend-mode: overlay;
+      opacity: 0.5;
+    }
+
+    .rc-login > * { position: relative; z-index: 1; }
+
     /* LOGO */
-    .logo-wrap {
+    .rc-login-logo {
       display: flex;
       align-items: center;
       gap: 14px;
-      margin-bottom: 52px;
+      margin-bottom: 36px;
     }
-    .logo-badge {
-      width: 48px;
-      height: 48px;
-      background: #F59E0B;
-      border-radius: 14px;
-      display: flex;
+
+    .rc-login-mark {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: #ffd83a;
+      color: #0a0e15;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 22px;
+      font-family: "Roboto Condensed", sans-serif;
+      font-size: 28px;
       font-weight: 900;
-      color: #0d0d0d;
-      font-family: 'Inter', sans-serif;
+      font-style: italic;
+      letter-spacing: -0.04em;
       flex-shrink: 0;
     }
-    .logo-text { line-height: 1.25; }
-    .logo-text strong {
-      font-size: 17px;
-      font-weight: 700;
-      display: block;
+
+    .rc-login-wordmark {
+      font-family: "Roboto Condensed", sans-serif;
+      font-weight: 900;
+      font-size: 18px;
+      letter-spacing: -0.01em;
+      line-height: 1;
       color: #fff;
-      letter-spacing: -0.3px;
     }
-    .logo-text span {
-      font-size: 11px;
-      color: #666;
-      letter-spacing: 1.5px;
+
+    .rc-login-wordmark small {
+      display: block;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.16em;
+      opacity: 0.6;
+      margin-top: 4px;
       text-transform: uppercase;
-      font-weight: 500;
+      font-family: "Roboto", sans-serif;
     }
 
     /* TITRE */
-    h1 {
-      font-size: 42px;
+    .rc-login h1 {
+      font-family: "Roboto Condensed", sans-serif;
+      font-size: 44px;
       font-weight: 900;
-      line-height: 1.05;
-      margin-bottom: 14px;
-      letter-spacing: -1.5px;
+      letter-spacing: -0.03em;
+      line-height: 0.92;
+      margin-bottom: 12px;
       color: #fff;
     }
-    h1 em {
-      font-style: normal;
-      color: #F59E0B;
+
+    .rc-login h1 em {
+      font-style: italic;
+      background: linear-gradient(90deg, #ffd83a 0%, #ef4343 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
     }
 
-    .subtitle {
-      color: #777;
-      font-size: 15px;
-      line-height: 1.6;
-      margin-bottom: 52px;
-      font-weight: 400;
+    .rc-login-sub {
+      font-size: 14px;
+      opacity: 0.7;
+      margin-bottom: 40px;
+      line-height: 1.5;
+      color: #fff;
     }
 
     /* FIELDS */
-    .field-label {
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1.2px;
-      text-transform: uppercase;
-      color: #555;
-      margin-bottom: 10px;
+    .rc-field {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 14px;
     }
 
-    input {
-      width: 100%;
-      background: #1c1c1c;
-      border: 1px solid #2a2a2a;
-      border-radius: 12px;
-      padding: 16px 18px;
+    .rc-field-lbl {
+      font-family: "Roboto Condensed", sans-serif;
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+    }
+
+    .rc-input {
+      height: 52px;
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 14px;
+      padding: 0 16px;
+      font: 15px "Roboto", sans-serif;
       color: #fff;
-      font-size: 16px;
-      font-family: 'Inter', sans-serif;
-      margin-bottom: 24px;
+      background: rgba(255,255,255,0.05);
       outline: none;
-      transition: border-color 0.2s;
+      backdrop-filter: blur(8px);
+      transition: border-color 0.2s, background 0.2s;
+      width: 100%;
     }
-    input:focus {
-      border-color: #F59E0B;
-      background: #1f1f1f;
+
+    .rc-input:focus {
+      border-color: #ffd83a;
+      background: rgba(255,255,255,0.08);
     }
-    input::placeholder { color: #3a3a3a; }
+
+    .rc-input::placeholder { color: rgba(255,255,255,0.2); }
 
     /* BOUTON */
-    .btn-login {
+    .rc-btn {
       width: 100%;
-      background: #F59E0B;
-      color: #0d0d0d;
-      border: none;
+      height: 54px;
       border-radius: 14px;
-      padding: 18px;
-      font-size: 16px;
-      font-weight: 700;
-      font-family: 'Inter', sans-serif;
+      border: none;
       cursor: pointer;
+      font-family: "Roboto Condensed", sans-serif;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.01em;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 8px;
-      margin-top: 8px;
-      letter-spacing: -0.2px;
       transition: opacity 0.2s, transform 0.1s;
+      margin-top: 12px;
     }
-    .btn-login:hover { opacity: 0.92; }
-    .btn-login:active { transform: scale(0.98); }
-    .btn-login:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .forgot {
-      text-align: center;
-      margin-top: 22px;
-      color: #555;
+    .rc-btn.primary {
+      background: #ffd83a;
+      color: #0a0e15;
+    }
+
+    .rc-btn.primary:hover { opacity: 0.92; }
+    .rc-btn.primary:active { transform: scale(0.98); }
+    .rc-btn.primary:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .rc-btn.ghost {
+      background: transparent;
+      color: rgba(255,255,255,0.6);
       font-size: 14px;
-      cursor: pointer;
       font-weight: 500;
-      transition: color 0.2s;
+      font-family: "Roboto", sans-serif;
+      margin-top: 4px;
     }
-    .forgot:hover { color: #888; }
 
+    .rc-btn.ghost:hover { color: rgba(255,255,255,0.9); }
+
+    /* ERREUR */
     .error-msg {
-      background: #1f0f0f;
-      border: 1px solid #3a1a1a;
+      background: rgba(239,67,67,0.12);
+      border: 1px solid rgba(239,67,67,0.3);
       border-radius: 10px;
-      color: #ff6b6b;
+      color: #ff8080;
       font-size: 13px;
       padding: 12px 16px;
-      margin-bottom: 16px;
+      margin-bottom: 8px;
       display: none;
       font-weight: 500;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="logo-wrap">
-      <div class="logo-badge">R</div>
-      <div class="logo-text">
-        <strong>RugbyCoach</strong>
-        <span>RCA Cergy Pontoise</span>
+  <div class="rc-login">
+
+    <div class="rc-login-logo">
+      <div class="rc-login-mark">R</div>
+      <div class="rc-login-wordmark">
+        RugbyCoach
+        <small>RCA Cergy Pontoise</small>
       </div>
     </div>
 
     <h1>Bienvenue sur<br>le <em>terrain.</em></h1>
-    <p class="subtitle">Pilotez votre saison, suivez chaque joueur,<br>analysez les chiffres.</p>
+    <p class="rc-login-sub">Pilotez votre saison, suivez chaque joueur,<br>analysez les chiffres.</p>
 
-    <div class="field-label">Email coach</div>
-    <input type="email" id="email" placeholder="coach@rca-cergy.fr" autocomplete="email">
+    <div class="rc-field">
+      <label class="rc-field-lbl">Email coach</label>
+      <input class="rc-input" type="email" id="email" placeholder="coach@rca-cergy.fr" autocomplete="email">
+    </div>
 
-    <div class="field-label">Mot de passe</div>
-    <input type="password" id="password" placeholder="••••••••••" autocomplete="current-password">
+    <div class="rc-field">
+      <label class="rc-field-lbl">Mot de passe</label>
+      <input class="rc-input" type="password" id="password" placeholder="••••••••••" autocomplete="current-password">
+    </div>
 
     <div class="error-msg" id="error"></div>
 
-    <button class="btn-login" id="btnLogin">
+    <button class="rc-btn primary" id="btnLogin">
       Entrer dans le vestiaire →
     </button>
-    <p class="forgot">Mot de passe oublié ?</p>
+
+    <button class="rc-btn ghost">
+      Mot de passe oublié ?
+    </button>
+
   </div>
 
   <script>
