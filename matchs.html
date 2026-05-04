@@ -17,6 +17,10 @@
     .header h1 { font-size: 18px; font-weight: 700; }
     .add-btn { margin-left: auto; background: #F59E0B; color: #111; border: none; border-radius: 8px; padding: 8px 14px; font-size: 13px; font-weight: 600; cursor: pointer; }
 
+    .tabs { display: flex; border-bottom: 0.5px solid #2a2a2a; padding: 0 20px; margin-bottom: 16px; }
+    .tab { flex: 1; padding: 12px 0; text-align: center; font-size: 13px; font-weight: 500; color: #666; cursor: pointer; border-bottom: 2px solid transparent; }
+    .tab.active { color: #F59E0B; border-bottom-color: #F59E0B; }
+
     .bilan-card { margin: 0 20px 20px; background: #F59E0B; border-radius: 14px; padding: 18px 20px; }
     .bilan-label { font-size: 11px; color: #7a5500; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 6px; }
     .bilan-score { font-size: 36px; font-weight: 800; color: #111; line-height: 1; margin-bottom: 4px; }
@@ -25,11 +29,19 @@
     .section { padding: 0 20px; margin-bottom: 24px; }
     .section-title { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; margin-bottom: 12px; }
 
-    .match-card { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-bottom: 10px; cursor: pointer; }
-    .match-card:hover { background: #252525; }
-    .match-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 10px; }
+    /* MATCH À VENIR */
+    .match-avenir { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-bottom: 10px; border-left: 3px solid #F59E0B; }
+    .match-avenir-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
     .match-adversaire { font-size: 16px; font-weight: 700; }
-    .match-result-badge { font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 20px; }
+    .avenir-badge { background: #F59E0B22; color: #F59E0B; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    .match-date-lieu { font-size: 12px; color: #888; margin-bottom: 12px; }
+    .match-competition { font-size: 11px; color: #F59E0B; font-weight: 600; margin-bottom: 4px; }
+    .saisir-btn { width: 100%; background: #F59E0B; color: #111; border: none; border-radius: 8px; padding: 11px; font-size: 13px; font-weight: 700; cursor: pointer; }
+
+    /* MATCH JOUÉ */
+    .match-joue { background: #1e1e1e; border-radius: 12px; padding: 16px; margin-bottom: 10px; }
+    .match-joue-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px; }
+    .match-result-badge { font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
     .win { background: #1a3a1a; color: #27ae60; }
     .loss { background: #3a1a1a; color: #C0392B; }
     .nul { background: #2a2a2a; color: #888; }
@@ -37,15 +49,13 @@
     .score-nous { color: #F59E0B; }
     .score-eux { color: #888; }
     .match-meta { font-size: 12px; color: #666; }
-    .match-competition { font-size: 11px; color: #F59E0B; font-weight: 600; margin-bottom: 4px; }
+    .edit-btn { width: 100%; background: #2a2a2a; color: #888; border: none; border-radius: 8px; padding: 9px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; }
+    .edit-btn:hover { background: #333; color: #fff; }
 
-    .stats-btn { width: 100%; background: #2a2a2a; color: #888; border: none; border-radius: 8px; padding: 10px; font-size: 12px; font-weight: 600; cursor: pointer; margin-top: 10px; }
-    .stats-btn:hover { background: #333; color: #fff; }
-
-    /* MODAL NOUVEAU MATCH */
+    /* MODALS */
     .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 200; display: none; align-items: flex-end; justify-content: center; }
     .modal-overlay.open { display: flex; }
-    .modal { background: #1a1a1a; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 390px; max-height: 90vh; overflow-y: auto; }
+    .modal { background: #1a1a1a; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 390px; max-height: 92vh; overflow-y: auto; }
     .modal-title { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
     .field-label { font-size: 11px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; font-weight: 600; }
     .field-input { width: 100%; background: #111; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 14px; margin-bottom: 16px; outline: none; font-family: inherit; }
@@ -56,25 +66,51 @@
     .btn-cancel { flex: 1; background: #2a2a2a; color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 15px; cursor: pointer; }
     .btn-save { flex: 2; background: #F59E0B; color: #111; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; }
 
-    /* MODAL STATS */
-    .stats-modal { background: #1a1a1a; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 390px; max-height: 92vh; overflow-y: auto; }
+    /* MODAL SAISIE STATS */
+    .stats-modal { background: #1a1a1a; border-radius: 20px 20px 0 0; padding: 24px 20px; width: 100%; max-width: 390px; max-height: 94vh; overflow-y: auto; }
     .progress-bar { background: #2a2a2a; border-radius: 4px; height: 4px; margin-bottom: 20px; }
     .progress-fill { background: #F59E0B; border-radius: 4px; height: 100%; transition: width 0.3s; }
-    .joueur-header { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
-    .joueur-avatar { width: 44px; height: 44px; background: #F59E0B22; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #F59E0B; font-size: 15px; }
+    .joueur-header { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; padding: 12px; background: #111; border-radius: 10px; }
+    .joueur-avatar { width: 44px; height: 44px; background: #F59E0B22; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; color: #F59E0B; font-size: 15px; flex-shrink: 0; }
     .joueur-name-big { font-size: 16px; font-weight: 700; }
-    .joueur-poste { font-size: 12px; color: #888; }
-    .stepper-row { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; border-bottom: 0.5px solid #2a2a2a; }
+    .joueur-poste-small { font-size: 12px; color: #888; }
+
+    .toggle-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid #2a2a2a; }
+    .toggle-label { font-size: 14px; font-weight: 500; }
+    .toggle-sub { font-size: 11px; color: #666; }
+    .toggle-switch { position: relative; width: 44px; height: 24px; }
+    .toggle-switch input { opacity: 0; width: 0; height: 0; }
+    .toggle-slider { position: absolute; cursor: pointer; inset: 0; background: #2a2a2a; border-radius: 24px; transition: 0.2s; }
+    .toggle-slider:before { content: ''; position: absolute; height: 18px; width: 18px; left: 3px; bottom: 3px; background: #666; border-radius: 50%; transition: 0.2s; }
+    input:checked + .toggle-slider { background: #F59E0B; }
+    input:checked + .toggle-slider:before { transform: translateX(20px); background: #111; }
+
+    .stepper-row { display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 0.5px solid #2a2a2a; }
     .stepper-label { font-size: 14px; font-weight: 500; }
     .stepper-sub { font-size: 11px; color: #666; }
     .stepper { display: flex; align-items: center; gap: 14px; }
     .stepper-btn { width: 32px; height: 32px; background: #2a2a2a; border: none; border-radius: 50%; color: #fff; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
     .stepper-btn:hover { background: #F59E0B; color: #111; }
-    .stepper-val { font-size: 18px; font-weight: 700; min-width: 24px; text-align: center; }
+    .stepper-val { font-size: 18px; font-weight: 700; min-width: 28px; text-align: center; }
+
+    .essais-section { margin: 12px 0; }
+    .essais-title { font-size: 12px; color: #666; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+    .essai-row { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+    .essai-num { font-size: 12px; color: #F59E0B; font-weight: 700; width: 20px; }
+    .essai-input { flex: 1; background: #111; border: 0.5px solid #2a2a2a; border-radius: 8px; padding: 8px 12px; color: #fff; font-size: 13px; outline: none; }
+    .essai-input:focus { border-color: #F59E0B; }
+
     .stars-row { display: flex; gap: 8px; padding: 14px 0; border-bottom: 0.5px solid #2a2a2a; align-items: center; justify-content: space-between; }
     .star-btn { font-size: 24px; cursor: pointer; opacity: 0.3; transition: opacity 0.15s; }
     .star-btn.active { opacity: 1; }
     .appreciation-input { width: 100%; background: #111; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px 14px; color: #fff; font-size: 14px; margin: 12px 0; outline: none; font-family: inherit; resize: none; }
+
+    .score-saisie { display: grid; grid-template-columns: 1fr auto 1fr; gap: 10px; align-items: center; margin-bottom: 20px; }
+    .score-team { text-align: center; }
+    .score-team-name { font-size: 11px; color: #888; margin-bottom: 6px; }
+    .score-input { width: 100%; background: #111; border: 0.5px solid #2a2a2a; border-radius: 10px; padding: 12px; color: #F59E0B; font-size: 28px; font-weight: 800; text-align: center; outline: none; }
+    .score-vs { font-size: 20px; color: #444; font-weight: 700; }
+
     .nav-joueur { display: flex; gap: 10px; margin-top: 16px; }
     .btn-prev { flex: 1; background: #2a2a2a; color: #fff; border: none; border-radius: 10px; padding: 14px; font-size: 15px; cursor: pointer; }
     .btn-next { flex: 2; background: #F59E0B; color: #111; border: none; border-radius: 10px; padding: 14px; font-size: 15px; font-weight: 600; cursor: pointer; }
@@ -104,12 +140,16 @@
   <div class="bilan-card">
     <div class="bilan-label">Bilan saison 2025/26</div>
     <div class="bilan-score" id="bilanScore">—</div>
-    <div class="bilan-desc" id="bilanDesc">Aucun match enregistré</div>
+    <div class="bilan-desc" id="bilanDesc">Aucun match joué</div>
+  </div>
+
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('avenir', this)">À venir</div>
+    <div class="tab" onclick="switchTab('joues', this)">Joués</div>
   </div>
 
   <div class="section">
-    <div class="section-title">Tous les matchs</div>
-    <div id="matchsList"><p class="empty">Aucun match — ajoute le premier ! 🏉</p></div>
+    <div id="matchsList"><p class="empty">Chargement...</p></div>
   </div>
 
   <!-- MODAL NOUVEAU MATCH -->
@@ -127,19 +167,6 @@
       </select>
       <div class="field-label">Compétition</div>
       <input class="field-input" id="mCompetition" placeholder="Ex: Championnat Fédérale 3">
-      <div class="field-label">Score</div>
-      <div class="score-row">
-        <div>
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">RCACP</div>
-          <input class="field-input" id="mScoreNous" type="number" placeholder="0" min="0">
-        </div>
-        <div>
-          <div style="font-size:11px;color:#666;margin-bottom:6px;">Adversaire</div>
-          <input class="field-input" id="mScoreEux" type="number" placeholder="0" min="0">
-        </div>
-      </div>
-      <div class="field-label">Rapport du coach</div>
-      <textarea class="field-input" id="mRapport" rows="3" placeholder="Analyse du match..."></textarea>
       <div class="modal-actions">
         <button class="btn-cancel" onclick="closeMatchModal()">Annuler</button>
         <button class="btn-save" onclick="saveMatch()">Enregistrer</button>
@@ -147,88 +174,158 @@
     </div>
   </div>
 
-  <!-- MODAL SAISIE STATS -->
+  <!-- MODAL SAISIE RÉSULTAT + STATS -->
   <div class="modal-overlay" id="statsModal">
     <div class="stats-modal">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
-        <div style="font-size:13px;color:#888" id="statsProgress">Joueur 1/15</div>
-        <button onclick="closeStatsModal()" style="background:none;border:none;color:#666;font-size:22px;cursor:pointer;">×</button>
-      </div>
-      <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
-      <div style="font-size:12px;color:#F59E0B;font-weight:600;margin-bottom:8px;" id="statsMatchTitle"></div>
-      <div class="joueur-header">
-        <div class="joueur-avatar" id="statsAvatar">?</div>
-        <div>
-          <div class="joueur-name-big" id="statsJoueurName">—</div>
-          <div class="joueur-poste" id="statsJoueurPoste">—</div>
+
+      <!-- ÉTAPE 1 : SCORE -->
+      <div id="etape1">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+          <div style="font-size:16px;font-weight:700;" id="statsMatchTitle">Saisie du match</div>
+          <button onclick="closeStatsModal()" style="background:none;border:none;color:#666;font-size:22px;cursor:pointer;">×</button>
+        </div>
+        <div style="font-size:12px;color:#888;margin-bottom:16px;">Étape 1/2 — Score du match</div>
+        <div class="score-saisie">
+          <div class="score-team">
+            <div class="score-team-name">RCACP</div>
+            <input class="score-input" id="scoreNous" type="number" min="0" value="0">
+          </div>
+          <div class="score-vs">–</div>
+          <div class="score-team">
+            <div class="score-team-name" id="scoreEuxLabel">Adversaire</div>
+            <input class="score-input" id="scoreEux" type="number" min="0" value="0">
+          </div>
+        </div>
+        <div class="field-label">Rapport du coach</div>
+        <textarea class="field-input" id="mRapport" rows="2" placeholder="Analyse du match..."></textarea>
+        <div class="modal-actions">
+          <button class="btn-cancel" onclick="closeStatsModal()">Annuler</button>
+          <button class="btn-save" onclick="passerEtape2()">Saisir les stats →</button>
         </div>
       </div>
 
-      <div class="stepper-row">
-        <div><div class="stepper-label">Minutes jouées</div></div>
-        <div class="stepper">
-          <button class="stepper-btn" onclick="updateStat('minutes_jouees', -1)">−</button>
-          <div class="stepper-val" id="stat_minutes_jouees">0</div>
-          <button class="stepper-btn" onclick="updateStat('minutes_jouees', 1)">+</button>
+      <!-- ÉTAPE 2 : STATS JOUEURS -->
+      <div id="etape2" style="display:none;">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+          <div style="font-size:13px;color:#888" id="statsProgress">Joueur 1/15</div>
+          <button onclick="closeStatsModal()" style="background:none;border:none;color:#666;font-size:22px;cursor:pointer;">×</button>
         </div>
-      </div>
-      <div class="stepper-row">
-        <div><div class="stepper-label">Essais</div></div>
-        <div class="stepper">
-          <button class="stepper-btn" onclick="updateStat('essais', -1)">−</button>
-          <div class="stepper-val" id="stat_essais">0</div>
-          <button class="stepper-btn" onclick="updateStat('essais', 1)">+</button>
-        </div>
-      </div>
-      <div class="stepper-row">
-        <div><div class="stepper-label">Passes décisives</div></div>
-        <div class="stepper">
-          <button class="stepper-btn" onclick="updateStat('passes_decisives', -1)">−</button>
-          <div class="stepper-val" id="stat_passes_decisives">0</div>
-          <button class="stepper-btn" onclick="updateStat('passes_decisives', 1)">+</button>
-        </div>
-      </div>
-      <div class="stepper-row">
-        <div><div class="stepper-label">Plaquages réussis</div></div>
-        <div class="stepper">
-          <button class="stepper-btn" onclick="updateStat('plaquages_reussis', -1)">−</button>
-          <div class="stepper-val" id="stat_plaquages_reussis">0</div>
-          <button class="stepper-btn" onclick="updateStat('plaquages_reussis', 1)">+</button>
-        </div>
-      </div>
-      <div class="stepper-row">
-        <div><div class="stepper-label">Plaquages manqués</div></div>
-        <div class="stepper">
-          <button class="stepper-btn" onclick="updateStat('plaquages_manques', -1)">−</button>
-          <div class="stepper-val" id="stat_plaquages_manques">0</div>
-          <button class="stepper-btn" onclick="updateStat('plaquages_manques', 1)">+</button>
-        </div>
-      </div>
-      <div class="stepper-row">
-        <div><div class="stepper-label">Mètres parcourus</div></div>
-        <div class="stepper">
-          <button class="stepper-btn" onclick="updateStat('metres_parcourus', -5)">−</button>
-          <div class="stepper-val" id="stat_metres_parcourus">0</div>
-          <button class="stepper-btn" onclick="updateStat('metres_parcourus', 5)">+</button>
-        </div>
-      </div>
+        <div class="progress-bar"><div class="progress-fill" id="progressFill" style="width:0%"></div></div>
+        <div style="font-size:12px;color:#888;margin-bottom:12px;">Étape 2/2 — Stats par joueur</div>
 
-      <div class="stars-row">
-        <div style="font-size:14px;font-weight:500;">Note</div>
-        <div style="display:flex;gap:6px;">
-          <span class="star-btn" onclick="setStar(1)" id="star1">⭐</span>
-          <span class="star-btn" onclick="setStar(2)" id="star2">⭐</span>
-          <span class="star-btn" onclick="setStar(3)" id="star3">⭐</span>
-          <span class="star-btn" onclick="setStar(4)" id="star4">⭐</span>
-          <span class="star-btn" onclick="setStar(5)" id="star5">⭐</span>
+        <div class="joueur-header">
+          <div class="joueur-avatar" id="statsAvatar">?</div>
+          <div>
+            <div class="joueur-name-big" id="statsJoueurName">—</div>
+            <div class="joueur-poste-small" id="statsJoueurPoste">—</div>
+          </div>
         </div>
-      </div>
 
-      <textarea class="appreciation-input" id="appreciationInput" rows="2" placeholder="Appréciation du coach..."></textarea>
+        <!-- A joué ? -->
+        <div class="toggle-row">
+          <div>
+            <div class="toggle-label">A joué ce match</div>
+            <div class="toggle-sub">Désactiver si absent ou non sélectionné</div>
+          </div>
+          <label class="toggle-switch">
+            <input type="checkbox" id="toggleJoue" checked onchange="toggleJoueChange()">
+            <span class="toggle-slider"></span>
+          </label>
+        </div>
 
-      <div class="nav-joueur">
-        <button class="btn-prev" id="btnPrev" onclick="prevJoueur()">← Précédent</button>
-        <button class="btn-next" id="btnNext" onclick="nextJoueur()">Joueur suivant →</button>
+        <div id="statsFields">
+          <div class="stepper-row">
+            <div><div class="stepper-label">Minutes jouées</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateStat('minutes_jouees', -1)">−</button>
+              <div class="stepper-val" id="stat_minutes_jouees">80</div>
+              <button class="stepper-btn" onclick="updateStat('minutes_jouees', 1)">+</button>
+            </div>
+          </div>
+
+          <!-- ESSAIS avec attribution joueur -->
+          <div class="stepper-row">
+            <div><div class="stepper-label">Essais marqués</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateEssais(-1)">−</button>
+              <div class="stepper-val" id="stat_essais">0</div>
+              <button class="stepper-btn" onclick="updateEssais(1)">+</button>
+            </div>
+          </div>
+          <div class="essais-section" id="essaisDetail" style="display:none;"></div>
+
+          <div class="stepper-row">
+            <div><div class="stepper-label">Transformations</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateStat('transformations', -1)">−</button>
+              <div class="stepper-val" id="stat_transformations">0</div>
+              <button class="stepper-btn" onclick="updateStat('transformations', 1)">+</button>
+            </div>
+          </div>
+          <div class="stepper-row">
+            <div><div class="stepper-label">Passes décisives</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateStat('passes_decisives', -1)">−</button>
+              <div class="stepper-val" id="stat_passes_decisives">0</div>
+              <button class="stepper-btn" onclick="updateStat('passes_decisives', 1)">+</button>
+            </div>
+          </div>
+          <div class="stepper-row">
+            <div><div class="stepper-label">Plaquages réussis</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateStat('plaquages_reussis', -1)">−</button>
+              <div class="stepper-val" id="stat_plaquages_reussis">0</div>
+              <button class="stepper-btn" onclick="updateStat('plaquages_reussis', 1)">+</button>
+            </div>
+          </div>
+          <div class="stepper-row">
+            <div><div class="stepper-label">Plaquages manqués</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateStat('plaquages_manques', -1)">−</button>
+              <div class="stepper-val" id="stat_plaquages_manques">0</div>
+              <button class="stepper-btn" onclick="updateStat('plaquages_manques', 1)">+</button>
+            </div>
+          </div>
+          <div class="stepper-row">
+            <div><div class="stepper-label">Mètres parcourus</div></div>
+            <div class="stepper">
+              <button class="stepper-btn" onclick="updateStat('metres_parcourus', -5)">−</button>
+              <div class="stepper-val" id="stat_metres_parcourus">0</div>
+              <button class="stepper-btn" onclick="updateStat('metres_parcourus', 5)">+</button>
+            </div>
+          </div>
+          <div class="stepper-row">
+            <div><div class="stepper-label">Carton jaune</div></div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="stat_carton_jaune">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <div class="stepper-row">
+            <div><div class="stepper-label">Carton rouge</div></div>
+            <label class="toggle-switch">
+              <input type="checkbox" id="stat_carton_rouge">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <div class="stars-row">
+            <div style="font-size:14px;font-weight:500;">Note coach</div>
+            <div style="display:flex;gap:6px;">
+              <span class="star-btn" onclick="setStar(1)" id="star1">⭐</span>
+              <span class="star-btn" onclick="setStar(2)" id="star2">⭐</span>
+              <span class="star-btn" onclick="setStar(3)" id="star3">⭐</span>
+              <span class="star-btn" onclick="setStar(4)" id="star4">⭐</span>
+              <span class="star-btn" onclick="setStar(5)" id="star5">⭐</span>
+            </div>
+          </div>
+          <textarea class="appreciation-input" id="appreciationInput" rows="2" placeholder="Appréciation du coach..."></textarea>
+        </div>
+
+        <div class="nav-joueur">
+          <button class="btn-prev" onclick="prevJoueur()">← Préc.</button>
+          <button class="btn-next" id="btnNext" onclick="nextJoueur()">Joueur suivant →</button>
+        </div>
       </div>
     </div>
   </div>
@@ -251,23 +348,25 @@
       <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
       <span>Séances</span>
     </a>
-    <button class="nav-item" onclick="logout()">
-      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
-      <span>Plus</span>
-    </button>
+    <a href="sante.html" class="nav-item">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#888" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+      <span>Santé</span>
+    </a>
   </nav>
 
   <script>
     let allMatchs = [];
     let allJoueurs = [];
+    let currentTab = 'avenir';
     let currentMatchId = null;
+    let currentMatchAdversaire = '';
     let currentJoueurIndex = 0;
     let currentStats = {};
     let currentNote = 0;
 
     (async () => {
       await requireAuth();
-      const { data: j } = await window.supabaseClient.from('joueurs').select('*').order('numero');
+      const { data: j } = await window.supabaseClient.from('joueurs').select('*').eq('archive', false).order('numero');
       allJoueurs = j || [];
       await loadMatchs();
     })();
@@ -276,36 +375,67 @@
       const { data } = await window.supabaseClient.from('matchs').select('*').order('date_match', { ascending: false });
       allMatchs = data || [];
 
-      if (allMatchs.length > 0) {
-        const V = allMatchs.filter(m => m.score_nous > m.score_eux).length;
-        const D = allMatchs.filter(m => m.score_nous < m.score_eux).length;
-        const N = allMatchs.filter(m => m.score_nous === m.score_eux).length;
+      const joues = allMatchs.filter(m => m.statut === 'joue');
+      if (joues.length > 0) {
+        const V = joues.filter(m => m.score_nous > m.score_eux).length;
+        const D = joues.filter(m => m.score_nous < m.score_eux).length;
+        const N = joues.filter(m => m.score_nous === m.score_eux).length;
         document.getElementById('bilanScore').textContent = `${V}-${D}-${N}`;
-        document.getElementById('bilanDesc').textContent = `${allMatchs.length} matchs · ${allMatchs.filter(m => m.score_nous > m.score_eux).length} victoires`;
+        document.getElementById('bilanDesc').textContent = `${joues.length} matchs joués cette saison`;
+      }
+      renderMatchs();
+    }
+
+    function switchTab(tab, el) {
+      currentTab = tab;
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      el.classList.add('active');
+      renderMatchs();
+    }
+
+    function renderMatchs() {
+      const list = document.getElementById('matchsList');
+      const filtered = allMatchs.filter(m => currentTab === 'avenir' ? m.statut === 'a_venir' : m.statut === 'joue');
+
+      if (!filtered.length) {
+        list.innerHTML = `<p class="empty">${currentTab === 'avenir' ? 'Aucun match à venir' : 'Aucun match joué'}</p>`;
+        return;
       }
 
-      const list = document.getElementById('matchsList');
-      if (!allMatchs.length) { list.innerHTML = '<p class="empty">Aucun match — ajoute le premier ! 🏉</p>'; return; }
-
-      list.innerHTML = allMatchs.map(m => {
-        const win = m.score_nous > m.score_eux;
-        const nul = m.score_nous === m.score_eux;
-        const date = new Date(m.date_match).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' });
-        return `<div class="match-card">
-          <div class="match-competition">${m.competition || 'Match'}</div>
-          <div class="match-top">
-            <div class="match-adversaire">vs ${m.adversaire}</div>
-            <span class="match-result-badge ${win ? 'win' : nul ? 'nul' : 'loss'}">${win ? 'VICTOIRE' : nul ? 'NUL' : 'DÉFAITE'}</span>
-          </div>
-          <div class="match-score">
-            <span class="score-nous">${m.score_nous ?? '?'}</span>
-            <span style="color:#444;font-size:20px;margin:0 6px">–</span>
-            <span class="score-eux">${m.score_eux ?? '?'}</span>
-          </div>
-          <div class="match-meta">${date} · ${m.lieu}</div>
-          <button class="stats-btn" onclick="openStatsModal(${m.id}, '${m.adversaire}')">📊 Saisir les stats joueurs</button>
-        </div>`;
-      }).join('');
+      if (currentTab === 'avenir') {
+        list.innerHTML = filtered.map(m => {
+          const date = new Date(m.date_match).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+          return `<div class="match-avenir">
+            ${m.competition ? `<div class="match-competition">${m.competition}</div>` : ''}
+            <div class="match-avenir-top">
+              <div class="match-adversaire">vs ${m.adversaire}</div>
+              <span class="avenir-badge">À VENIR</span>
+            </div>
+            <div class="match-date-lieu">📅 ${date} · ${m.lieu}</div>
+            <button class="saisir-btn" onclick="openStatsModal(${m.id}, '${m.adversaire}')">📊 Saisir le résultat</button>
+          </div>`;
+        }).join('');
+      } else {
+        list.innerHTML = filtered.map(m => {
+          const win = m.score_nous > m.score_eux;
+          const nul = m.score_nous === m.score_eux;
+          const date = new Date(m.date_match).toLocaleDateString('fr-FR', { weekday: 'short', day: 'numeric', month: 'long' });
+          return `<div class="match-joue">
+            ${m.competition ? `<div class="match-competition">${m.competition}</div>` : ''}
+            <div class="match-joue-top">
+              <div class="match-adversaire">vs ${m.adversaire}</div>
+              <span class="match-result-badge ${win ? 'win' : nul ? 'nul' : 'loss'}">${win ? 'VICTOIRE' : nul ? 'NUL' : 'DÉFAITE'}</span>
+            </div>
+            <div class="match-score">
+              <span class="score-nous">${m.score_nous ?? '?'}</span>
+              <span style="color:#444;font-size:20px;margin:0 6px">–</span>
+              <span class="score-eux">${m.score_eux ?? '?'}</span>
+            </div>
+            <div class="match-meta">${date} · ${m.lieu}</div>
+            <button class="edit-btn" onclick="openStatsModal(${m.id}, '${m.adversaire}')">✏️ Modifier les stats</button>
+          </div>`;
+        }).join('');
+      }
     }
 
     function openMatchModal() { document.getElementById('matchModal').classList.add('open'); }
@@ -315,31 +445,43 @@
       const adversaire = document.getElementById('mAdversaire').value.trim();
       const date_match = document.getElementById('mDate').value;
       if (!adversaire || !date_match) { alert('Adversaire et date obligatoires'); return; }
-      const { error } = await window.supabaseClient.from('matchs').insert({
-        adversaire,
-        date_match,
+      await window.supabaseClient.from('matchs').insert({
+        adversaire, date_match,
         lieu: document.getElementById('mLieu').value,
         competition: document.getElementById('mCompetition').value.trim() || null,
-        score_nous: parseInt(document.getElementById('mScoreNous').value) || 0,
-        score_eux: parseInt(document.getElementById('mScoreEux').value) || 0,
-        rapport: document.getElementById('mRapport').value.trim() || null
+        statut: 'a_venir'
       });
-      if (error) { alert('Erreur : ' + error.message); return; }
       closeMatchModal();
+      document.getElementById('mAdversaire').value = '';
+      document.getElementById('mDate').value = '';
+      document.getElementById('mCompetition').value = '';
       await loadMatchs();
     }
 
     function openStatsModal(matchId, adversaire) {
       currentMatchId = matchId;
+      currentMatchAdversaire = adversaire;
       currentJoueurIndex = 0;
       currentStats = {};
       currentNote = 0;
       document.getElementById('statsMatchTitle').textContent = `vs ${adversaire}`;
+      document.getElementById('scoreEuxLabel').textContent = adversaire;
+      document.getElementById('etape1').style.display = 'block';
+      document.getElementById('etape2').style.display = 'none';
       document.getElementById('statsModal').classList.add('open');
-      renderStatsJoueur();
     }
 
-    function closeStatsModal() { document.getElementById('statsModal').classList.remove('open'); }
+    function closeStatsModal() {
+      document.getElementById('statsModal').classList.remove('open');
+      document.getElementById('etape1').style.display = 'block';
+      document.getElementById('etape2').style.display = 'none';
+    }
+
+    function passerEtape2() {
+      document.getElementById('etape1').style.display = 'none';
+      document.getElementById('etape2').style.display = 'block';
+      renderStatsJoueur();
+    }
 
     function renderStatsJoueur() {
       const j = allJoueurs[currentJoueurIndex];
@@ -352,21 +494,61 @@
       document.getElementById('statsJoueurPoste').textContent = `#${j.numero || '?'} · ${j.poste || ''}`;
 
       const saved = currentStats[j.id] || {};
-      ['minutes_jouees','essais','passes_decisives','plaquages_reussis','plaquages_manques','metres_parcourus'].forEach(k => {
-        document.getElementById(`stat_${k}`).textContent = saved[k] || 0;
+      const aJoue = saved.aJoue !== false;
+      document.getElementById('toggleJoue').checked = aJoue;
+      document.getElementById('statsFields').style.opacity = aJoue ? '1' : '0.3';
+      document.getElementById('statsFields').style.pointerEvents = aJoue ? 'auto' : 'none';
+
+      ['minutes_jouees','essais','transformations','passes_decisives','plaquages_reussis','plaquages_manques','metres_parcourus'].forEach(k => {
+        const el = document.getElementById(`stat_${k}`);
+        if (el) el.textContent = saved[k] || (k === 'minutes_jouees' ? 80 : 0);
       });
+
+      document.getElementById('stat_carton_jaune').checked = saved.carton_jaune || false;
+      document.getElementById('stat_carton_rouge').checked = saved.carton_rouge || false;
       currentNote = saved.note_etoiles || 0;
       document.getElementById('appreciationInput').value = saved.appreciation || '';
       updateStars(currentNote);
+      renderEssaisDetail(saved.essais || 0, saved.essaisJoueurs || []);
 
-      document.getElementById('btnPrev').style.opacity = currentJoueurIndex === 0 ? '0.3' : '1';
       document.getElementById('btnNext').textContent = currentJoueurIndex === total - 1 ? '✅ Terminer' : 'Joueur suivant →';
+    }
+
+    function toggleJoueChange() {
+      const aJoue = document.getElementById('toggleJoue').checked;
+      document.getElementById('statsFields').style.opacity = aJoue ? '1' : '0.3';
+      document.getElementById('statsFields').style.pointerEvents = aJoue ? 'auto' : 'none';
+      const j = allJoueurs[currentJoueurIndex];
+      if (!currentStats[j.id]) currentStats[j.id] = {};
+      currentStats[j.id].aJoue = aJoue;
+    }
+
+    function renderEssaisDetail(nb, essaisJoueurs) {
+      const section = document.getElementById('essaisDetail');
+      if (nb === 0) { section.style.display = 'none'; return; }
+      section.style.display = 'block';
+      section.innerHTML = `<div class="essais-title">Minute(s) des essais</div>` +
+        Array.from({length: nb}, (_, i) => `
+          <div class="essai-row">
+            <span class="essai-num">${i+1}.</span>
+            <input class="essai-input" id="essai_min_${i}" type="number" placeholder="Minute (ex: 23)" value="${essaisJoueurs[i] || ''}">
+          </div>`).join('');
+    }
+
+    function updateEssais(delta) {
+      const j = allJoueurs[currentJoueurIndex];
+      if (!currentStats[j.id]) currentStats[j.id] = {};
+      const current = currentStats[j.id].essais || 0;
+      const newVal = Math.max(0, current + delta);
+      currentStats[j.id].essais = newVal;
+      document.getElementById('stat_essais').textContent = newVal;
+      renderEssaisDetail(newVal, currentStats[j.id].essaisJoueurs || []);
     }
 
     function updateStat(key, delta) {
       const j = allJoueurs[currentJoueurIndex];
       if (!currentStats[j.id]) currentStats[j.id] = {};
-      const current = currentStats[j.id][key] || 0;
+      const current = currentStats[j.id][key] !== undefined ? currentStats[j.id][key] : (key === 'minutes_jouees' ? 80 : 0);
       currentStats[j.id][key] = Math.max(0, current + delta);
       document.getElementById(`stat_${key}`).textContent = currentStats[j.id][key];
     }
@@ -390,6 +572,16 @@
       if (!currentStats[j.id]) currentStats[j.id] = {};
       currentStats[j.id].appreciation = document.getElementById('appreciationInput').value;
       currentStats[j.id].note_etoiles = currentNote;
+      currentStats[j.id].carton_jaune = document.getElementById('stat_carton_jaune').checked;
+      currentStats[j.id].carton_rouge = document.getElementById('stat_carton_rouge').checked;
+      currentStats[j.id].aJoue = document.getElementById('toggleJoue').checked;
+
+      // Sauvegarder les minutes des essais
+      const nbEssais = currentStats[j.id].essais || 0;
+      currentStats[j.id].essaisJoueurs = Array.from({length: nbEssais}, (_, i) => {
+        const el = document.getElementById(`essai_min_${i}`);
+        return el ? el.value : '';
+      });
     }
 
     async function nextJoueur() {
@@ -411,15 +603,42 @@
     }
 
     async function saveAllStats() {
-      const inserts = Object.entries(currentStats).map(([joueur_id, stats]) => ({
-        joueur_id: parseInt(joueur_id),
-        match_id: currentMatchId,
-        ...stats
-      }));
+      // Sauvegarder le score
+      await window.supabaseClient.from('matchs').update({
+        score_nous: parseInt(document.getElementById('scoreNous').value) || 0,
+        score_eux: parseInt(document.getElementById('scoreEux').value) || 0,
+        rapport: document.getElementById('mRapport').value.trim() || null,
+        statut: 'joue'
+      }).eq('id', currentMatchId);
+
+      // Supprimer les anciennes stats pour ce match
+      await window.supabaseClient.from('stats_match').delete().eq('match_id', currentMatchId);
+
+      // Insérer les nouvelles stats
+      const inserts = Object.entries(currentStats)
+        .filter(([_, s]) => s.aJoue !== false)
+        .map(([joueur_id, s]) => ({
+          joueur_id: parseInt(joueur_id),
+          match_id: currentMatchId,
+          minutes_jouees: s.minutes_jouees || 80,
+          essais: s.essais || 0,
+          transformations: s.transformations || 0,
+          passes_decisives: s.passes_decisives || 0,
+          plaquages_reussis: s.plaquages_reussis || 0,
+          plaquages_manques: s.plaquages_manques || 0,
+          metres_parcourus: s.metres_parcourus || 0,
+          carton_jaune: s.carton_jaune || false,
+          carton_rouge: s.carton_rouge || false,
+          note_etoiles: s.note_etoiles || null,
+          appreciation: s.appreciation || null
+        }));
+
       if (inserts.length > 0) {
         await window.supabaseClient.from('stats_match').insert(inserts);
       }
-      alert('Stats enregistrées ✅');
+
+      alert('✅ Match et stats enregistrés !');
+      await loadMatchs();
     }
   </script>
 </body>
