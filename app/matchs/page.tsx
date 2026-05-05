@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
+import { COMPETENCES, CATEGORIES, GRADE_COLORS } from '@/lib/competences'
 
 interface Match {
   id: number; adversaire: string; date_match: string; lieu: string
@@ -44,6 +45,8 @@ export default function MatchsPage() {
   const [joueurIndex, setJoueurIndex] = useState(0)
   const [allStats, setAllStats] = useState<Record<number, StatData>>({})
   const [currentNote, setCurrentNote] = useState(0)
+  const [allEvals, setAllEvals] = useState<Record<number, Record<string, string>>>({})
+  const [showComps, setShowComps] = useState(false)
 
   useEffect(() => { loadAll() }, [])
 
@@ -79,6 +82,7 @@ export default function MatchsPage() {
     setStatsMatchId(matchId); setStatsMatchAdversaire(adversaire)
     setEtape(1); setScoreNous(0); setScoreEux(0); setRapport('')
     setJoueurIndex(0); setAllStats({}); setCurrentNote(0)
+    setAllEvals({}); setShowComps(false)
     setStatsModal(true)
   }
 
@@ -96,6 +100,13 @@ export default function MatchsPage() {
         note_etoiles: note,
         aJoue: (prev[j.id]?.aJoue) !== false,
       }
+    }))
+  }
+
+  function setEval(joueurId: number, compId: string, grade: string) {
+    setAllEvals(prev => ({
+      ...prev,
+      [joueurId]: { ...(prev[joueurId] || {}), [compId]: grade }
     }))
   }
 
@@ -125,7 +136,23 @@ export default function MatchsPage() {
       }))
 
     if (inserts.length > 0) await supabase.from('stats_match').insert(inserts)
-    alert('✅ Match et stats enregistrés !')
+
+    // Save evaluations (A/B/C/D) for each player
+    const evalInserts = Object.entries(allEvals)
+      .filter(([joueur_id]) => allStats[parseInt(joueur_id)]?.aJoue !== false)
+      .map(([joueur_id, grades]) => ({
+        joueur_id: parseInt(joueur_id),
+        match_id: statsMatchId,
+        date_eval: new Date().toISOString().split('T')[0],
+        ...grades,
+      }))
+
+    if (evalInserts.length > 0) {
+      await supabase.from('evaluations').delete().eq('match_id', statsMatchId)
+      await supabase.from('evaluations').insert(evalInserts)
+    }
+
+    alert('✅ Match, stats et évaluations enregistrés !')
     closeStatsModal()
     await loadMatchs()
   }
@@ -373,6 +400,70 @@ export default function MatchsPage() {
                   value={curStats.appreciation || ''}
                   onChange={e => setStat('appreciation', e.target.value)}
                 />
+
+                {/* SECTION COMPÉTENCES A/B/C/D */}
+                <div style={{ margin: '16px 18px 0' }}>
+                  <button
+                    onClick={() => setShowComps(v => !v)}
+                    style={{
+                      width: '100%', background: 'rgba(255,216,58,0.1)',
+                      border: '1px solid rgba(255,216,58,0.3)', borderRadius: 12,
+                      padding: '10px 14px', color: '#ffd83a',
+                      fontFamily: 'var(--display)', fontWeight: 800, fontSize: 13,
+                      cursor: 'pointer', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                    }}
+                  >
+                    <span><i className="ri-bar-chart-grouped-line" style={{ marginRight: 8 }}></i>Évaluation compétences</span>
+                    <span style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+                      {Object.keys(allEvals[curJoueur?.id] || {}).length > 0 && (
+                        <span style={{ background: '#ffd83a', color: '#0a0e15', borderRadius: 8, padding: '2px 8px', fontSize: 11, fontWeight: 900 }}>
+                          {Object.keys(allEvals[curJoueur?.id] || {}).length}/22
+                        </span>
+                      )}
+                      <i className={showComps ? 'ri-arrow-up-s-line' : 'ri-arrow-down-s-line'}></i>
+                    </span>
+                  </button>
+
+                  {showComps && curJoueur && (
+                    <div style={{ marginTop: 12 }}>
+                      {CATEGORIES.map(cat => (
+                        <div key={cat} style={{ marginBottom: 16 }}>
+                          <div style={{
+                            fontFamily: 'var(--display)', fontSize: 11, fontWeight: 900,
+                            letterSpacing: '0.1em', textTransform: 'uppercase',
+                            color: 'rgba(255,216,58,0.7)', marginBottom: 8,
+                          }}>{cat}</div>
+                          {COMPETENCES.filter(c => c.category === cat).map(comp => {
+                            const grade = allEvals[curJoueur.id]?.[comp.id]
+                            return (
+                              <div key={comp.id} style={{
+                                display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                                padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
+                              }}>
+                                <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', flex: 1 }}>{comp.name}</span>
+                                <div style={{ display: 'flex', gap: 4 }}>
+                                  {(['A', 'B', 'C', 'D'] as const).map(g => (
+                                    <button
+                                      key={g}
+                                      onClick={() => setEval(curJoueur.id, comp.id, grade === g ? '' : g)}
+                                      style={{
+                                        width: 32, height: 32, borderRadius: 8, border: 'none',
+                                        fontFamily: 'var(--display)', fontWeight: 900, fontSize: 13,
+                                        cursor: 'pointer',
+                                        background: grade === g ? GRADE_COLORS[g] : 'rgba(255,255,255,0.08)',
+                                        color: grade === g ? (g === 'B' ? '#0a0e15' : '#fff') : 'rgba(255,255,255,0.5)',
+                                      }}
+                                    >{g}</button>
+                                  ))}
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="nav-joueur">
