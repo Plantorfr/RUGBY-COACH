@@ -1,12 +1,12 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { useRouter } from 'next/navigation'
 
 interface BottomNavProps {
   fabAction?: () => void
   fabHref?: string
-  active: 'dashboard' | 'effectif' | 'matchs' | 'seances' | 'sante'
+  active: 'dashboard' | 'effectif' | 'matchs' | 'seances' | 'sante' | 'competences'
 }
 
 export default function BottomNav({ fabAction, fabHref = '/matchs', active }: BottomNavProps) {
@@ -32,9 +32,9 @@ export default function BottomNav({ fabAction, fabHref = '/matchs', active }: Bo
           <i className="ri-add-line"></i>
         </button>
       </div>
-      <Link href="/seances" className={`nav-item${active === 'seances' ? ' active' : ''}`}>
-        <i className={active === 'seances' ? 'ri-calendar-fill' : 'ri-calendar-line'}></i>
-        <span>Séances</span>
+      <Link href="/competences" className={`nav-item${active === 'competences' ? ' active' : ''}`}>
+        <i className={active === 'competences' ? 'ri-mental-health-fill' : 'ri-mental-health-line'}></i>
+        <span>Compétences</span>
       </Link>
       <Link href="/sante" className={`nav-item${active === 'sante' ? ' active' : ''}`}>
         <i className={active === 'sante' ? 'ri-heart-pulse-fill' : 'ri-heart-pulse-line'}></i>

@@ -30,7 +30,41 @@ export async function proxy(request: NextRequest) {
   }
 
   if (user && pathname === '/') {
-    return NextResponse.redirect(new URL('/dashboard', request.url))
+    // Check role to redirect appropriately
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role || 'coach'
+
+    if (role === 'player') {
+      return NextResponse.redirect(new URL('/portail', request.url))
+    } else {
+      return NextResponse.redirect(new URL('/dashboard', request.url))
+    }
+  }
+
+  // Role-based access control
+  if (user) {
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', user.id)
+      .single()
+
+    const role = profile?.role || 'coach'
+
+    // Player restrictions
+    if (role === 'player') {
+      const playerAllowedPaths = ['/portail', '/competences', '/']
+      const isAllowed = playerAllowedPaths.some(p => pathname.startsWith(p))
+
+      if (!isAllowed) {
+        return NextResponse.redirect(new URL('/portail', request.url))
+      }
+    }
   }
 
   return supabaseResponse

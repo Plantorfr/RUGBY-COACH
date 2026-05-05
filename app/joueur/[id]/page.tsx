@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
+import { COMPETENCES, CATEGORIES, GRADE_COLORS, GRADE_VALUES } from '@/lib/competences'
 
 interface Joueur {
   id: number; prenom: string; nom: string; numero?: number; poste?: string
@@ -19,6 +20,119 @@ interface Blessure {
   id: number; type_blessure: string; statut: string; date_debut: string
   date_retour_estime?: string; notes_medicales?: string; resolved?: boolean
 }
+interface Evaluation {
+  id: string
+  date_eval: string
+  match_id?: string
+  commentaire?: string
+  [key: string]: unknown
+  matchs?: { adversaire: string; date_match: string }
+}
+
+// SVG Radar Chart component
+function RadarChart({ evaluation }: { evaluation: Evaluation }) {
+  const size = 200
+  const cx = size / 2
+  const cy = size / 2
+  const r = 75
+
+  const categoryScores = CATEGORIES.map(cat => {
+    const comps = COMPETENCES.filter(c => c.category === cat)
+    const values = comps
+      .map(c => evaluation[c.id] as string | undefined)
+      .filter(Boolean)
+      .map(g => GRADE_VALUES[g as string] || 0)
+    const avg = values.length ? values.reduce((a, b) => a + b, 0) / values.length : 0
+    return { cat, score: avg / 4 } // normalize 0-1
+  })
+
+  const n = categoryScores.length
+  const points = categoryScores.map(({ score }, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2
+    const x = cx + r * score * Math.cos(angle)
+    const y = cy + r * score * Math.sin(angle)
+    return { x, y }
+  })
+
+  const labelPoints = categoryScores.map(({ cat }, i) => {
+    const angle = (Math.PI * 2 * i) / n - Math.PI / 2
+    const labelR = r + 22
+    const x = cx + labelR * Math.cos(angle)
+    const y = cy + labelR * Math.sin(angle)
+    return { x, y, cat }
+  })
+
+  // Background grid lines (3 levels)
+  const gridLevels = [0.33, 0.66, 1.0]
+  const gridPolygons = gridLevels.map(level => {
+    const pts = Array.from({ length: n }, (_, i) => {
+      const angle = (Math.PI * 2 * i) / n - Math.PI / 2
+      return `${cx + r * level * Math.cos(angle)},${cy + r * level * Math.sin(angle)}`
+    }).join(' ')
+    return pts
+  })
+
+  const polyPoints = points.map(p => `${p.x},${p.y}`).join(' ')
+
+  const gradeColors: Record<string, string> = {
+    'Attaque': '#ffd83a',
+    'Défense': '#ef4343',
+    'Jeu groupé': '#1e3b8a',
+    'Physique': '#22c55e',
+    'Mental': '#a855f7',
+  }
+
+  return (
+    <svg width={size + 80} height={size + 40} viewBox={`-40 -20 ${size + 80} ${size + 40}`} style={{ display: 'block', margin: '0 auto' }}>
+      {/* Grid polygons */}
+      {gridPolygons.map((pts, i) => (
+        <polygon key={i} points={pts} fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="1" />
+      ))}
+
+      {/* Axis lines */}
+      {Array.from({ length: n }, (_, i) => {
+        const angle = (Math.PI * 2 * i) / n - Math.PI / 2
+        return (
+          <line key={i}
+            x1={cx} y1={cy}
+            x2={cx + r * Math.cos(angle)}
+            y2={cy + r * Math.sin(angle)}
+            stroke="rgba(255,255,255,0.1)" strokeWidth="1"
+          />
+        )
+      })}
+
+      {/* Data polygon */}
+      <polygon
+        points={polyPoints}
+        fill="rgba(255,216,58,0.15)"
+        stroke="#ffd83a"
+        strokeWidth="2"
+      />
+
+      {/* Data points */}
+      {points.map((p, i) => (
+        <circle key={i} cx={p.x} cy={p.y} r={4} fill={gradeColors[categoryScores[i].cat] || '#ffd83a'} />
+      ))}
+
+      {/* Labels */}
+      {labelPoints.map(({ x, y, cat }, i) => {
+        const score = categoryScores[i].score
+        const grade = score >= 0.875 ? 'A' : score >= 0.625 ? 'B' : score >= 0.375 ? 'C' : 'D'
+        return (
+          <g key={cat}>
+            <text x={x} y={y - 4} textAnchor="middle" fill="rgba(255,255,255,0.7)" fontSize="9" fontFamily="var(--sans)">
+              {cat}
+            </text>
+            <text x={x} y={y + 8} textAnchor="middle" fill={GRADE_COLORS[grade] || '#ffd83a'} fontSize="10" fontWeight="bold" fontFamily="var(--display)">
+              {grade}
+            </text>
+          </g>
+        )
+      })}
+    </svg>
+  )
+}
 
 export default function JoueurPage() {
   const { id } = useParams()
@@ -27,6 +141,7 @@ export default function JoueurPage() {
   const [joueur, setJoueur] = useState<Joueur | null>(null)
   const [stats, setStats] = useState<StatMatch[]>([])
   const [blessures, setBlessures] = useState<Blessure[]>([])
+  const [evaluations, setEvaluations] = useState<Evaluation[]>([])
   const [activeTab, setActiveTab] = useState('stats')
   const [notes, setNotes] = useState('')
   const [blessureModal, setBlessureModal] = useState(false)
@@ -35,7 +150,7 @@ export default function JoueurPage() {
   useEffect(() => { if (id) { loadAll() } }, [id])
 
   async function loadAll() {
-    await Promise.all([loadJoueur(), loadStats(), loadBlessures()])
+    await Promise.all([loadJoueur(), loadStats(), loadBlessures(), loadEvaluations()])
   }
 
   async function loadJoueur() {
@@ -53,6 +168,11 @@ export default function JoueurPage() {
   async function loadBlessures() {
     const { data } = await supabase.from('sante').select('*').eq('joueur_id', id).order('created_at', { ascending: false })
     setBlessures(data || [])
+  }
+
+  async function loadEvaluations() {
+    const { data } = await supabase.from('evaluations').select('*, matchs(adversaire, date_match)').eq('joueur_id', id).order('created_at', { ascending: false }).limit(5)
+    setEvaluations(data || [])
   }
 
   async function toggleDisponible() {
@@ -78,6 +198,20 @@ export default function JoueurPage() {
     await loadBlessures()
   }
 
+  function getCategoryAvgGrade(evaluation: Evaluation, category: string): string | null {
+    const comps = COMPETENCES.filter(c => c.category === category)
+    const values = comps
+      .map(c => evaluation[c.id] as string | undefined)
+      .filter(Boolean)
+      .map(g => GRADE_VALUES[g as string] || 0)
+    if (!values.length) return null
+    const avg = values.reduce((a, b) => a + b, 0) / values.length
+    if (avg >= 3.5) return 'A'
+    if (avg >= 2.5) return 'B'
+    if (avg >= 1.5) return 'C'
+    return 'D'
+  }
+
   if (!joueur) return <div style={{ color: 'var(--fg-mute)', padding: 40, textAlign: 'center' }}>Chargement...</div>
 
   const noted = stats.filter(s => s.note_etoiles)
@@ -86,6 +220,8 @@ export default function JoueurPage() {
   const totalMetres = stats.reduce((s, m) => s + (m.metres_parcourus || 0), 0)
   const totalEssais = stats.reduce((s, m) => s + (m.essais || 0), 0)
   const totalPasses = stats.reduce((s, m) => s + (m.passes_decisives || 0), 0)
+
+  const latestEval = evaluations[0] || null
 
   return (
     <>
@@ -115,9 +251,9 @@ export default function JoueurPage() {
       </div>
 
       <div className="segments">
-        {['stats', 'matchs', 'medical', 'notes'].map(t => (
+        {['stats', 'matchs', 'eval', 'medical', 'notes'].map(t => (
           <button key={t} className={`segment${activeTab === t ? ' active' : ''}`} onClick={() => setActiveTab(t)}>
-            {t === 'medical' ? 'Médical' : t.charAt(0).toUpperCase() + t.slice(1)}
+            {t === 'medical' ? 'Médical' : t === 'eval' ? 'Éval' : t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
@@ -166,6 +302,136 @@ export default function JoueurPage() {
             </div>
           )
         })}
+      </div>
+
+      {/* ÉVALUATIONS */}
+      <div className={`tab-content${activeTab === 'eval' ? ' active' : ''}`}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
+          <div className="section-title" style={{ margin: 0 }}>Profil de performance</div>
+          <Link href={`/evaluations/${id}`} style={{
+            background: 'var(--yellow)', color: 'var(--bg)',
+            borderRadius: 10, padding: '7px 14px',
+            fontFamily: 'var(--display)', fontSize: 12, fontWeight: 800,
+            textDecoration: 'none',
+          }}>
+            + Évaluer
+          </Link>
+        </div>
+
+        {latestEval ? (
+          <>
+            {/* Radar chart */}
+            <div style={{
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid rgba(255,255,255,0.1)',
+              borderRadius: 16,
+              padding: '16px 8px',
+              marginBottom: 20,
+            }}>
+              <div style={{ fontSize: 12, color: 'var(--fg-mute)', textAlign: 'center', marginBottom: 12 }}>
+                Dernière évaluation — {new Date(latestEval.date_eval).toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' })}
+              </div>
+              <RadarChart evaluation={latestEval} />
+              {/* Legend */}
+              <div style={{ display: 'flex', gap: 8, justifyContent: 'center', flexWrap: 'wrap', marginTop: 10 }}>
+                {(['A', 'B', 'C', 'D'] as const).map(g => (
+                  <span key={g} style={{
+                    display: 'flex', alignItems: 'center', gap: 4,
+                    fontSize: 11, color: GRADE_COLORS[g]
+                  }}>
+                    <span style={{ width: 8, height: 8, borderRadius: '50%', background: GRADE_COLORS[g], display: 'inline-block' }}></span>
+                    {g} = {g === 'A' ? 'Excellent' : g === 'B' ? 'Bon' : g === 'C' ? 'Moyen' : 'À améliorer'}
+                  </span>
+                ))}
+              </div>
+            </div>
+
+            {/* Category summary for latest eval */}
+            <div className="section-title">Résumé par catégorie</div>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 8, marginBottom: 20 }}>
+              {CATEGORIES.map(cat => {
+                const grade = getCategoryAvgGrade(latestEval, cat)
+                return (
+                  <div key={cat} style={{
+                    background: grade ? `${GRADE_COLORS[grade]}15` : 'rgba(255,255,255,0.05)',
+                    border: `1px solid ${grade ? GRADE_COLORS[grade] + '30' : 'rgba(255,255,255,0.1)'}`,
+                    borderRadius: 12,
+                    padding: '10px 6px',
+                    textAlign: 'center',
+                  }}>
+                    <div style={{ fontSize: 18, fontWeight: 900, fontFamily: 'var(--display)', color: grade ? GRADE_COLORS[grade] : 'var(--fg-mute)' }}>
+                      {grade || '—'}
+                    </div>
+                    <div style={{ fontSize: 9, color: 'var(--fg-mute)', marginTop: 3, lineHeight: 1.2 }}>
+                      {cat === 'Jeu groupé' ? 'J.G.' : cat}
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+
+            {/* Recent evaluations table */}
+            <div className="section-title">Historique des évaluations</div>
+            {evaluations.map(ev => {
+              const date = new Date(ev.date_eval).toLocaleDateString('fr-FR', { day: 'numeric', month: 'short', year: '2-digit' })
+              const matchName = ev.matchs ? `vs ${(ev.matchs as { adversaire: string }).adversaire}` : 'Sans match'
+              return (
+                <div key={ev.id} style={{
+                  background: 'rgba(255,255,255,0.04)',
+                  border: '1px solid rgba(255,255,255,0.08)',
+                  borderRadius: 12,
+                  padding: '12px 14px',
+                  marginBottom: 8,
+                }}>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
+                    <div>
+                      <div style={{ fontSize: 13, fontWeight: 600, color: 'white' }}>{date}</div>
+                      <div style={{ fontSize: 11, color: 'var(--fg-mute)' }}>{matchName}</div>
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+                    {CATEGORIES.map(cat => {
+                      const g = getCategoryAvgGrade(ev, cat)
+                      return g ? (
+                        <span key={cat} style={{
+                          background: `${GRADE_COLORS[g]}20`,
+                          color: GRADE_COLORS[g],
+                          border: `1px solid ${GRADE_COLORS[g]}40`,
+                          borderRadius: 6,
+                          padding: '2px 8px',
+                          fontSize: 12,
+                          fontWeight: 700,
+                          fontFamily: 'var(--display)',
+                        }}>
+                          {cat === 'Jeu groupé' ? 'J.G.' : cat.substring(0, 3)} {g}
+                        </span>
+                      ) : null
+                    })}
+                  </div>
+                </div>
+              )
+            })}
+          </>
+        ) : (
+          <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+            <div style={{ fontSize: 40, marginBottom: 12 }}>📊</div>
+            <p style={{ color: 'var(--fg-mute)', fontSize: 14, marginBottom: 20 }}>
+              Aucune évaluation pour ce joueur
+            </p>
+            <Link href={`/evaluations/${id}`} style={{
+              background: 'var(--yellow)',
+              color: '#0a0e15',
+              borderRadius: 12,
+              padding: '12px 24px',
+              fontFamily: 'var(--display)',
+              fontSize: 14,
+              fontWeight: 900,
+              textDecoration: 'none',
+            }}>
+              Créer une évaluation
+            </Link>
+          </div>
+        )}
       </div>
 
       {/* MÉDICAL */}
