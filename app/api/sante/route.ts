@@ -3,7 +3,7 @@
  * POST /api/sante           — déclare une blessure (coach only)
  * GET  /api/sante?resolved  — historique des blessures résolues
  */
-import { requireAuth, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
+import { requireAuth, requireCoach, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
 import { BlessureSchema } from '@/lib/validations'
 
 export async function GET(request: Request) {
@@ -27,7 +27,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { supabase } = await requireAuth()
+    const { supabase } = await requireCoach()
 
     const body = await request.json()
     const result = BlessureSchema.safeParse(body)

@@ -3,7 +3,7 @@
  * PATCH  /api/joueurs/[id] — modifie un joueur (coach only)
  * DELETE /api/joueurs/[id] — archive un joueur (coach only)
  */
-import { requireAuth, apiSuccess, apiError, NotFoundError, ValidationError } from '@/lib/supabase-server'
+import { requireAuth, requireCoach, apiSuccess, apiError, NotFoundError, ValidationError } from '@/lib/supabase-server'
 import { JoueurUpdateSchema } from '@/lib/validations'
 
 interface Params { params: Promise<{ id: string }> }
@@ -32,7 +32,7 @@ export async function GET(_req: Request, { params }: Params) {
 
 export async function PATCH(request: Request, { params }: Params) {
   try {
-    const { supabase } = await requireAuth()
+    const { supabase } = await requireCoach()
     const { id } = await params
 
     const body = await request.json()
@@ -58,7 +58,7 @@ export async function PATCH(request: Request, { params }: Params) {
 
 export async function DELETE(_req: Request, { params }: Params) {
   try {
-    const { supabase } = await requireAuth()
+    const { supabase } = await requireCoach()
     const { id } = await params
 
     const { error } = await supabase

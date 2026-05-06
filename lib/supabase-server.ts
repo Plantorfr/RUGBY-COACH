@@ -1,50 +1,6 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 
-/**
- * Client Supabase côté serveur (API routes / Server Components).
- * Lit les cookies de la requête pour vérifier l'auth JWT.
- */
-export async function createServerSupabase() {
-  const cookieStore = await cookies()
-
-  return createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-key',
-    {
-      cookies: {
-        getAll() {
-          return cookieStore.getAll()
-        },
-        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
-          try {
-            cookiesToSet.forEach(({ name, value, options }) =>
-              cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2])
-            )
-          } catch {
-            // setAll peut échouer dans un Server Component en lecture seule
-          }
-        },
-      },
-    }
-  )
-}
-
-/**
- * Vérifie que l'utilisateur est authentifié.
- * Renvoie { user } ou lance une AppError 401.
- */
-export async function requireAuth() {
-  const supabase = await createServerSupabase()
-  const { data: { user }, error } = await supabase.auth.getUser()
-
-  if (error || !user) {
-    throw new AuthError('Non authentifié — connectez-vous.')
-  }
-
-  return { supabase, user }
-}
-
 // ─── Hiérarchie d'erreurs métier ────────────────────────────────────────────
 
 export class AppError extends Error {
@@ -84,6 +40,72 @@ export class NotFoundError extends AppError {
     super(`${resource} introuvable`, 404, 'NOT_FOUND')
     this.name = 'NotFoundError'
   }
+}
+
+// ─── Client Supabase côté serveur ───────────────────────────────────────────
+
+/**
+ * Client Supabase côté serveur (API routes / Server Components).
+ * Lit les cookies de la requête pour vérifier l'auth JWT.
+ */
+export async function createServerSupabase() {
+  const cookieStore = await cookies()
+
+  return createServerClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-key',
+    {
+      cookies: {
+        getAll() {
+          return cookieStore.getAll()
+        },
+        setAll(cookiesToSet: { name: string; value: string; options?: Record<string, unknown> }[]) {
+          try {
+            cookiesToSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options as Parameters<typeof cookieStore.set>[2])
+            )
+          } catch {
+            // setAll peut échouer dans un Server Component en lecture seule
+          }
+        },
+      },
+    }
+  )
+}
+
+/**
+ * Vérifie que l'utilisateur est authentifié.
+ * Renvoie { supabase, user } ou lance une AuthError 401.
+ */
+export async function requireAuth() {
+  const supabase = await createServerSupabase()
+  const { data: { user }, error } = await supabase.auth.getUser()
+
+  if (error || !user) {
+    throw new AuthError('Non authentifié — connectez-vous.')
+  }
+
+  return { supabase, user }
+}
+
+/**
+ * Vérifie que l'utilisateur est coach (role = 'coach').
+ * Lance ForbiddenError sinon.
+ */
+export async function requireCoach() {
+  const { supabase, user } = await requireAuth()
+
+  const { data: profile } = await supabase
+    .from('profiles')
+    .select('role')
+    .eq('id', user.id)
+    .single()
+
+  if (profile?.role !== 'coach') {
+    throw new ForbiddenError('Accès réservé au coach.')
+  }
+
+  return { supabase, user }
 }
 
 // ─── Helper de réponse normalisée ───────────────────────────────────────────

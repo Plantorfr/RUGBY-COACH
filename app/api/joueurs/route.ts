@@ -2,7 +2,7 @@
  * GET  /api/joueurs — liste les joueurs actifs
  * POST /api/joueurs — crée un joueur (coach only)
  */
-import { requireAuth, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
+import { requireAuth, requireCoach, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
 import { JoueurCreateSchema } from '@/lib/validations'
 
 export async function GET() {
@@ -23,7 +23,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const { supabase } = await requireAuth()
+    const { supabase } = await requireCoach()
 
     const body = await request.json()
     const result = JoueurCreateSchema.safeParse(body)

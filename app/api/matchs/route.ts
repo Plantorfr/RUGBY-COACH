@@ -3,7 +3,7 @@
  * GET  /api/matchs?statut=joue  — filtre par statut (a_venir | joue)
  * POST /api/matchs              — crée un match (coach only)
  */
-import { requireAuth, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
+import { requireAuth, requireCoach, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
 import { MatchCreateSchema } from '@/lib/validations'
 
 export async function GET(request: Request) {
@@ -40,7 +40,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { supabase } = await requireAuth()
+    const { supabase } = await requireCoach()
 
     const body = await request.json()
     const result = MatchCreateSchema.safeParse(body)

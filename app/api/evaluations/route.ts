@@ -2,7 +2,7 @@
  * GET  /api/evaluations?joueur_id=X — historique évaluations d'un joueur
  * POST /api/evaluations             — enregistre une évaluation (coach only)
  */
-import { requireAuth, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
+import { requireAuth, requireCoach, apiSuccess, apiError, ValidationError } from '@/lib/supabase-server'
 import { EvaluationSchema } from '@/lib/validations'
 
 export async function GET(request: Request) {
@@ -30,7 +30,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
-    const { supabase, user } = await requireAuth()
+    const { supabase, user } = await requireCoach()
 
     const body = await request.json()
     const result = EvaluationSchema.safeParse(body)
