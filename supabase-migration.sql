@@ -48,3 +48,39 @@ CREATE TABLE IF NOT EXISTS evaluations (
 -- RLS for evaluations
 ALTER TABLE evaluations ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Coach can do everything" ON evaluations FOR ALL USING (true);
+
+-- Index sur colonnes critiques (performances requêtes)
+CREATE INDEX IF NOT EXISTS idx_joueurs_archive ON joueurs(archive);
+CREATE INDEX IF NOT EXISTS idx_joueurs_auth_user ON joueurs(auth_user_id);
+CREATE INDEX IF NOT EXISTS idx_matchs_statut ON matchs(statut);
+CREATE INDEX IF NOT EXISTS idx_matchs_date ON matchs(date_match DESC);
+CREATE INDEX IF NOT EXISTS idx_stats_match_joueur ON stats_match(joueur_id);
+CREATE INDEX IF NOT EXISTS idx_stats_match_match ON stats_match(match_id);
+CREATE INDEX IF NOT EXISTS idx_evaluations_joueur ON evaluations(joueur_id);
+CREATE INDEX IF NOT EXISTS idx_evaluations_match ON evaluations(match_id);
+CREATE INDEX IF NOT EXISTS idx_sante_resolved ON sante(resolved);
+
+-- RLS correcte pour evaluations (remplace la policy permissive)
+DROP POLICY IF EXISTS "Coach can do everything" ON evaluations;
+
+-- Coach (role = coach dans profiles) peut tout faire
+CREATE POLICY "evaluations_coach_all" ON evaluations
+  FOR ALL
+  USING (
+    EXISTS (
+      SELECT 1 FROM profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.role = 'coach'
+    )
+  );
+
+-- Joueur peut lire UNIQUEMENT ses propres évaluations
+CREATE POLICY "evaluations_player_read_own" ON evaluations
+  FOR SELECT
+  USING (
+    EXISTS (
+      SELECT 1 FROM joueurs
+      WHERE joueurs.id = evaluations.joueur_id
+      AND joueurs.auth_user_id = auth.uid()
+    )
+  );
