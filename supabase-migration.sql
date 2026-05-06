@@ -84,3 +84,82 @@ CREATE POLICY "evaluations_player_read_own" ON evaluations
       AND joueurs.auth_user_id = auth.uid()
     )
   );
+
+-- ================================================================
+-- RLS — Toutes les tables
+-- Coach (role='coach') : accès total
+-- Joueur : lecture uniquement de ses propres données
+-- ================================================================
+
+-- profiles
+ALTER TABLE profiles ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "profiles_own" ON profiles;
+CREATE POLICY "profiles_own" ON profiles
+  FOR ALL USING (auth.uid() = id);
+
+-- joueurs
+ALTER TABLE joueurs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "joueurs_coach_all" ON joueurs;
+DROP POLICY IF EXISTS "joueurs_player_read_own" ON joueurs;
+CREATE POLICY "joueurs_coach_all" ON joueurs
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'coach')
+  );
+CREATE POLICY "joueurs_player_read_own" ON joueurs
+  FOR SELECT USING (auth_user_id = auth.uid());
+
+-- matchs
+ALTER TABLE matchs ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "matchs_coach_all" ON matchs;
+DROP POLICY IF EXISTS "matchs_player_read" ON matchs;
+CREATE POLICY "matchs_coach_all" ON matchs
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'coach')
+  );
+CREATE POLICY "matchs_player_read" ON matchs
+  FOR SELECT USING (true); -- matchs sont publics pour les joueurs authentifiés
+
+-- stats_match
+ALTER TABLE stats_match ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "stats_coach_all" ON stats_match;
+DROP POLICY IF EXISTS "stats_player_read_own" ON stats_match;
+CREATE POLICY "stats_coach_all" ON stats_match
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'coach')
+  );
+CREATE POLICY "stats_player_read_own" ON stats_match
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM joueurs
+      WHERE joueurs.id = stats_match.joueur_id
+      AND joueurs.auth_user_id = auth.uid()
+    )
+  );
+
+-- sante
+ALTER TABLE sante ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "sante_coach_all" ON sante;
+DROP POLICY IF EXISTS "sante_player_read_own" ON sante;
+CREATE POLICY "sante_coach_all" ON sante
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'coach')
+  );
+CREATE POLICY "sante_player_read_own" ON sante
+  FOR SELECT USING (
+    EXISTS (
+      SELECT 1 FROM joueurs
+      WHERE joueurs.id = sante.joueur_id
+      AND joueurs.auth_user_id = auth.uid()
+    )
+  );
+
+-- seances (coach only — les joueurs n'ont pas accès direct)
+ALTER TABLE seances ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "seances_coach_all" ON seances;
+DROP POLICY IF EXISTS "seances_player_read" ON seances;
+CREATE POLICY "seances_coach_all" ON seances
+  FOR ALL USING (
+    EXISTS (SELECT 1 FROM profiles WHERE profiles.id = auth.uid() AND profiles.role = 'coach')
+  );
+CREATE POLICY "seances_player_read" ON seances
+  FOR SELECT USING (true);
