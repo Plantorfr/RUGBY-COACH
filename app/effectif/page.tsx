@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
+import { PlayerAvatar } from '@/components/ui'
 
 interface Joueur {
   id: number
@@ -141,8 +142,8 @@ export default function EffectifPage() {
             <p className="empty">{tab === 'actifs' ? 'Aucun joueur — ajoute le premier 🏉' : 'Aucun joueur archivé'}</p>
           ) : filtered.map(j => (
             <div key={j.id} className="player-row">
-              <div className={`player-avatar${j.capitaine ? ' cap' : ''}`} onClick={() => router.push(`/joueur/${j.id}`)}>
-                {j.prenom.charAt(0)}{j.nom.charAt(0)}
+              <div onClick={() => router.push(`/joueur/${j.id}`)}>
+                <PlayerAvatar prenom={j.prenom} nom={j.nom} isCap={j.capitaine} />
               </div>
               <div className="player-info" onClick={() => router.push(`/joueur/${j.id}`)}>
                 <div className="player-name">{j.prenom} {j.nom} {j.capitaine ? '⭐' : ''}</div>

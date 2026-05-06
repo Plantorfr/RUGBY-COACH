@@ -6,7 +6,8 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
-import { COMPETENCES, CATEGORIES, GRADE_COLORS } from '@/lib/competences'
+import { COMPETENCES, CATEGORIES } from '@/lib/competences'
+import { GradeButtonGroup } from '@/components/ui'
 
 interface Match {
   id: number; adversaire: string; date_match: string; lieu: string
@@ -441,21 +442,10 @@ export default function MatchsPage() {
                                 padding: '8px 0', borderBottom: '1px solid rgba(255,255,255,0.05)',
                               }}>
                                 <span style={{ fontSize: 13, color: 'rgba(255,255,255,0.85)', flex: 1 }}>{comp.name}</span>
-                                <div style={{ display: 'flex', gap: 4 }}>
-                                  {(['A', 'B', 'C', 'D'] as const).map(g => (
-                                    <button
-                                      key={g}
-                                      onClick={() => setEval(curJoueur.id, comp.id, grade === g ? '' : g)}
-                                      style={{
-                                        width: 32, height: 32, borderRadius: 8, border: 'none',
-                                        fontFamily: 'var(--display)', fontWeight: 900, fontSize: 13,
-                                        cursor: 'pointer',
-                                        background: grade === g ? GRADE_COLORS[g] : 'rgba(255,255,255,0.08)',
-                                        color: grade === g ? (g === 'B' ? '#0a0e15' : '#fff') : 'rgba(255,255,255,0.5)',
-                                      }}
-                                    >{g}</button>
-                                  ))}
-                                </div>
+                                <GradeButtonGroup
+                                  value={grade}
+                                  onChange={g => setEval(curJoueur.id, comp.id, g)}
+                                />
                               </div>
                             )
                           })}

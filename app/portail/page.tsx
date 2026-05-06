@@ -7,6 +7,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import BottomNavPlayer from '@/components/BottomNavPlayer'
+import { PlayerAvatar } from '@/components/ui'
 import { COMPETENCES, CATEGORIES, GRADE_COLORS, GRADE_VALUES } from '@/lib/competences'
 
 interface Joueur {
@@ -144,14 +145,7 @@ export default function PortailPage() {
           <div className="appbar-greet">Bonjour,</div>
           <div className="appbar-team">{joueur.prenom} {joueur.nom}</div>
         </div>
-        <div style={{
-          width: 42, height: 42, borderRadius: 13,
-          background: 'var(--yellow)', color: 'var(--bg)',
-          display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontFamily: 'var(--display)', fontSize: 18, fontWeight: 900,
-        }}>
-          {joueur.prenom.charAt(0)}
-        </div>
+        <PlayerAvatar prenom={joueur.prenom} nom={joueur.nom} isCap={true} />
       </div>
 
       <div style={{ padding: '0 18px' }}>

@@ -7,7 +7,8 @@ import Link from 'next/link'
 import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import BottomNav from '@/components/BottomNav'
-import { COMPETENCES, CATEGORIES, GRADE_COLORS } from '@/lib/competences'
+import { COMPETENCES, CATEGORIES } from '@/lib/competences'
+import { GradeButtonGroup } from '@/components/ui'
 
 interface Joueur {
   id: string
@@ -234,30 +235,10 @@ export default function EvaluationPage() {
                         <i className="ri-external-link-line"></i>
                       </Link>
                     </div>
-                    <div style={{ display: 'flex', gap: 6 }}>
-                      {(['A', 'B', 'C', 'D'] as const).map(grade => (
-                        <button
-                          key={grade}
-                          onClick={() => setGrade(comp.id, grade)}
-                          style={{
-                            flex: 1,
-                            padding: '8px 4px',
-                            borderRadius: 10,
-                            border: '2px solid',
-                            borderColor: grades[comp.id] === grade ? GRADE_COLORS[grade] : 'rgba(255,255,255,0.1)',
-                            background: grades[comp.id] === grade ? `${GRADE_COLORS[grade]}25` : 'transparent',
-                            color: grades[comp.id] === grade ? GRADE_COLORS[grade] : 'var(--fg-mute)',
-                            fontSize: 14,
-                            fontWeight: 900,
-                            fontFamily: 'var(--display)',
-                            cursor: 'pointer',
-                            transition: 'all 0.15s',
-                          }}
-                        >
-                          {grade}
-                        </button>
-                      ))}
-                    </div>
+                    <GradeButtonGroup
+                      value={grades[comp.id]}
+                      onChange={grade => setGrade(comp.id, grade)}
+                    />
                   </div>
                 ))}
               </div>
