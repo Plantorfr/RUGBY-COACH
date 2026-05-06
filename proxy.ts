@@ -2,6 +2,13 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 
+/**
+ * Middleware Edge Next.js (proxy.ts) — Auth + RBAC
+ * S'exécute sur chaque requête avant le rendu de la page.
+ * Vérifie le JWT Supabase (cookie httpOnly) et redirige selon le rôle.
+ *
+ * Convention Next.js 16 : le fichier s'appelle proxy.ts (et non middleware.ts).
+ */
 export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
@@ -25,7 +32,7 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
-  // Non authentifié → login
+  // Non authentifié → redirection vers la page de login
   if (!user && pathname !== '/') {
     return NextResponse.redirect(new URL('/', request.url))
   }
@@ -40,12 +47,14 @@ export async function proxy(request: NextRequest) {
 
     const role = profile?.role ?? 'coach'
 
-    // Redirect depuis login
+    // Depuis la page de login → redirection selon le rôle
     if (pathname === '/') {
-      return NextResponse.redirect(new URL(role === 'player' ? '/portail' : '/dashboard', request.url))
+      return NextResponse.redirect(
+        new URL(role === 'player' ? '/portail' : '/dashboard', request.url)
+      )
     }
 
-    // RBAC joueur
+    // RBAC — le joueur ne peut accéder qu'au portail et aux compétences
     if (role === 'player') {
       const playerAllowedPaths = ['/portail', '/competences']
       const isAllowed = playerAllowedPaths.some(p => pathname.startsWith(p))
