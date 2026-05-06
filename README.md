@@ -1,6 +1,7 @@
 # RugbyCoach — RCACP 95
 
-[![CI](https://img.shields.io/github/deployments/Plantorfr/RUGBY-COACH/production?label=vercel&logo=vercel)](https://rugby-coach-liard.vercel.app)
+[![CI](https://github.com/Plantorfr/RUGBY-COACH/actions/workflows/ci.yml/badge.svg)](https://github.com/Plantorfr/RUGBY-COACH/actions/workflows/ci.yml)
+[![Vercel](https://img.shields.io/badge/deploy-vercel-black?logo=vercel)](https://rugby-coach-liard.vercel.app)
 
 > Application web de gestion de performance pour entraîneur de rugby senior.  
 > Pilotez votre effectif, analysez chaque joueur match par match sur 22 compétences rugby, et offrez à vos joueurs un portail de suivi personnalisé.
@@ -210,6 +211,13 @@ app/
 ├── portail/page.tsx            # Dashboard joueur
 ├── portail/mes-evaluations/    # Historique évals (vue joueur)
 └── joueurs/inviter/page.tsx    # Invitation joueurs
+hooks/
+├── useAuth.ts          # Auth state + redirect
+├── useJoueurs.ts       # CRUD effectif
+├── useMatchs.ts        # Matchs + bilan saison
+├── useSante.ts         # Infirmerie + compteurs
+├── useEvaluations.ts   # Évaluations A/B/C/D
+└── index.ts            # Barrel exports
 components/
 ├── BottomNav.tsx               # Navigation coach
 └── BottomNavPlayer.tsx         # Navigation joueur
