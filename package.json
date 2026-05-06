@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "seed": "echo 'Ouvrir seed.sql dans Supabase SQL Editor'"
   },
   "dependencies": {
     "@supabase/ssr": "^0.6.1",

@@ -135,6 +135,7 @@ Déploiement CD automatique sur push `main`. TLS automatique, CDN global, suppor
 | Tailwind CSS | 4.x | Utilitaires CSS |
 | Supabase | 2.50.0 | Auth + PostgreSQL + BaaS |
 | @supabase/ssr | 0.6.1 | Middleware Edge + cookies |
+| Zod | 3.x | Validation serveur |
 | Vercel | — | Hébergement + CD |
 
 ---
@@ -166,7 +167,11 @@ cp .env.example .env.local
 # → Coller et exécuter le contenu de supabase-migration.sql
 # → Puis coller et exécuter seed.sql pour les données de démo
 
-# 5. Lancer le serveur de dev
+# 5. Insérer les données de démonstration (seed)
+npm run seed
+# → Ouvre Supabase Dashboard > SQL Editor et colle le contenu de seed.sql
+
+# 6. Lancer le serveur de dev
 npm run dev
 # → App disponible sur http://localhost:3000
 ```
@@ -215,6 +220,8 @@ proxy.ts                        # Middleware Edge (auth + RBAC)
 supabase-migration.sql          # Schéma BDD
 seed.sql                        # Données de démonstration
 ```
+
+→ [Documentation API complète](docs/API.md)
 
 ---
 
