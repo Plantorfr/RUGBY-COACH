@@ -29,7 +29,8 @@ export function useJoueurs() {
     setLoading(false)
   }, [supabase])
 
-  useEffect(() => { load() }, [load])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load() }, [load])
 
   const create = useCallback(async (data: Omit<Joueur, 'id'>) => {
     const { error } = await supabase

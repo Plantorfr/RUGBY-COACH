@@ -46,6 +46,7 @@ export default function DashboardPage() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     load()
     return () => { if (intervalRef.current) clearInterval(intervalRef.current) }
   }, [])

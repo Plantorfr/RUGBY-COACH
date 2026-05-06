@@ -25,6 +25,7 @@ export default function MesEvaluationsPage() {
   const [loading, setLoading] = useState(true)
   const [expandedId, setExpandedId] = useState<string | null>(null)
 
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => { load() }, [])
 
   async function load() {

@@ -28,7 +28,8 @@ export function useSante() {
     setLoading(false)
   }, [supabase])
 
-  useEffect(() => { load() }, [load])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load() }, [load])
 
   const declare = useCallback(async (data: Omit<Blessure, 'id' | 'resolved' | 'joueurs'>) => {
     const { error } = await supabase.from('sante').insert({ ...data, resolved: false })

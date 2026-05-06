@@ -91,18 +91,6 @@ export default function MatchsPage() {
     setStatsModal(false); setEtape(1)
   }
 
-  function saveCurrentJoueur(idx: number, note: number) {
-    const j = joueurs[idx]
-    if (!j) return
-    setAllStats(prev => ({
-      ...prev,
-      [j.id]: {
-        ...(prev[j.id] || {}),
-        note_etoiles: note,
-        aJoue: (prev[j.id]?.aJoue) !== false,
-      }
-    }))
-  }
 
   function setEval(joueurId: number, compId: string, grade: string) {
     setAllEvals(prev => ({

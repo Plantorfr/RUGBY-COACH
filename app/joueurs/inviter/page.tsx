@@ -40,6 +40,7 @@ export default function InviterJoueursPage() {
   const [results, setResults] = useState<Record<string, InviteResult>>({})
   const [copied, setCopied] = useState<string | null>(null)
 
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => { load() }, [])
 
   async function load() {

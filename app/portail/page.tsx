@@ -45,6 +45,7 @@ export default function PortailPage() {
   const [prevEval, setPrevEval] = useState<Evaluation | null>(null)
   const [loading, setLoading] = useState(true)
 
+  // eslint-disable-next-line react-hooks/immutability
   useEffect(() => { load() }, [])
 
   async function load() {

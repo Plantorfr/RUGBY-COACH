@@ -35,7 +35,8 @@ export function useMatchs() {
     setLoading(false)
   }, [supabase])
 
-  useEffect(() => { load() }, [load])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load() }, [load])
 
   const create = useCallback(async (data: Omit<Match, 'id' | 'statut'>) => {
     const { error } = await supabase.from('matchs').insert({ ...data, statut: 'a_venir' })

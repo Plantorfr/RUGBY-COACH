@@ -41,6 +41,7 @@ export default function EvaluationPage() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/immutability
     if (joueurId) load()
   }, [joueurId])
 

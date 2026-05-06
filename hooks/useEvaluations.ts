@@ -28,7 +28,8 @@ export function useEvaluations(joueurId: number | string) {
     setLoading(false)
   }, [supabase, joueurId])
 
-  useEffect(() => { load() }, [load])
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => { void load() }, [load])
 
   const save = useCallback(async (evalData: Record<string, unknown>) => {
     if (evalData.match_id) {
