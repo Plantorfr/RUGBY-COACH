@@ -1,22 +1,27 @@
 {
-  "name": "RugbyCoach RCACP 95",
+  "name": "RugbyCoach — RCACP 95",
   "short_name": "RugbyCoach",
-  "description": "Application de gestion d'équipe — RCACP Cergy-Pontoise",
-  "start_url": "/index.html",
+  "description": "Application de gestion d'équipe de rugby — RCACP Cergy-Pontoise",
+  "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#111111",
-  "theme_color": "#F59E0B",
-  "orientation": "portrait",
+  "background_color": "#0a0e15",
+  "theme_color": "#ffd83a",
+  "orientation": "portrait-primary",
+  "lang": "fr",
+  "categories": ["sports", "productivity"],
   "icons": [
     {
-      "src": "assets/icons/icon-192.png",
+      "src": "/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     },
     {
-      "src": "assets/icons/icon-512.png",
+      "src": "/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
