@@ -6,8 +6,8 @@ export async function proxy(request: NextRequest) {
   let supabaseResponse = NextResponse.next({ request })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL ?? 'https://placeholder.supabase.co',
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY ?? 'placeholder-key',
     {
       cookies: {
         getAll() { return request.cookies.getAll() },
@@ -25,28 +25,12 @@ export async function proxy(request: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser()
   const { pathname } = request.nextUrl
 
+  // Non authentifié → login
   if (!user && pathname !== '/') {
     return NextResponse.redirect(new URL('/', request.url))
   }
 
-  if (user && pathname === '/') {
-    // Check role to redirect appropriately
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('role')
-      .eq('id', user.id)
-      .single()
-
-    const role = profile?.role || 'coach'
-
-    if (role === 'player') {
-      return NextResponse.redirect(new URL('/portail', request.url))
-    } else {
-      return NextResponse.redirect(new URL('/dashboard', request.url))
-    }
-  }
-
-  // Role-based access control
+  // Authentifié → fetch role une seule fois
   if (user) {
     const { data: profile } = await supabase
       .from('profiles')
@@ -54,13 +38,17 @@ export async function proxy(request: NextRequest) {
       .eq('id', user.id)
       .single()
 
-    const role = profile?.role || 'coach'
+    const role = profile?.role ?? 'coach'
 
-    // Player restrictions
+    // Redirect depuis login
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL(role === 'player' ? '/portail' : '/dashboard', request.url))
+    }
+
+    // RBAC joueur
     if (role === 'player') {
-      const playerAllowedPaths = ['/portail', '/competences', '/']
+      const playerAllowedPaths = ['/portail', '/competences']
       const isAllowed = playerAllowedPaths.some(p => pathname.startsWith(p))
-
       if (!isAllowed) {
         return NextResponse.redirect(new URL('/portail', request.url))
       }

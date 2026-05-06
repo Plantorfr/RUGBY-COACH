@@ -118,9 +118,9 @@ Déploiement CD automatique sur push `main`. TLS automatique, CDN global, suppor
 
 ### Limites connues
 
-- **RLS permissive** : la policy `evaluations` est `USING (true)` — un joueur authentifié peut lire toutes les évaluations via l'API Supabase directe. À corriger avant mise en production réelle.
-- **Pas d'API routes Next.js** : toute la couche données passe par le client Supabase directement depuis le navigateur. Acceptable pour un usage mono-coach, mais pas scalable.
-- **Pas de tests automatisés** : aucun test unitaire ou e2e. La validation est manuelle.
+- **RLS complète** : toutes les tables ont des policies RLS granulaires (coach accès total, joueur lecture de ses propres données uniquement).
+- **7 API routes Next.js** : couche serveur complète avec Zod validation, RBAC et réponses normalisées `{ data, error }`.
+- **Tests unitaires Vitest** : schemas Zod et hiérarchie d'erreurs couverts. E2e à venir.
 - **Config.js legacy** : l'ancien prototype vanilla JS (`assets/`) est encore dans le repo mais n'est pas utilisé par l'app Next.js.
 - **Seed manuel** : les données de démo doivent être insérées via le fichier `seed.sql` dans Supabase — pas de commande CLI automatisée.
 
@@ -241,10 +241,10 @@ Voir la section [Architecture](#architecture) ci-dessus.
 
 ## Limites connues & TODO
 
-- [ ] Corriger les policies RLS pour isoler les données par joueur
-- [ ] Ajouter des API routes Next.js pour centraliser la logique serveur
-- [ ] Ajouter tests unitaires (Jest + Testing Library)
-- [ ] Composition d'équipe drag & drop (terrain 15 positions)
+- [x] RLS granulaires sur toutes les tables (coach/joueur)
+- [x] 7 API routes Next.js avec validation Zod
+- [x] Tests unitaires Vitest (validations + erreurs)
+- [ ] Tests e2e (Playwright ou Cypress)
 - [ ] Export PDF rapport post-match
 - [ ] Domaine personnalisé
 
